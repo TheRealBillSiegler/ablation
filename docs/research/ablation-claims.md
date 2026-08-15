@@ -33,4 +33,4 @@ The interview was recorded the day after the Opus 5 release; the transcript was 
 
 This file and every capture beside it ship with the skill — they are what makes its claims checkable anywhere.
 
-The `calibration-*`, `substitution-*` and `legitimacy-research-*` files in this directory do **not** belong to that set. They are run records from one machine, and calibration is per-configuration and expires on model change, so a stranger's installation inherits none of it. Any packaging step should exclude them; they stay here because [VALIDATION.md](https://github.com/TheRealBillSiegler/claude-plugins/tree/main/evals/ablation) cites them as the evidence behind its verdicts.
+The `calibration-*`, `substitution-*` and `legitimacy-research-*` files in this directory do **not** belong to that set. They are run records from one machine, and calibration is per-configuration and expires on model change, so a stranger's installation inherits none of it. Any packaging step should exclude them; they stay here because [VALIDATION.md](https://github.com/TheRealBillSiegler/ablation/tree/main/evals) cites them as the evidence behind its verdicts.

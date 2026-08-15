@@ -1,7 +1,7 @@
 // Test for tier3-arms.workflow.js — exercises every gate, the tally, the verdict rules and the
 // report, with stubbed workers and graders. Spawns nothing and costs nothing.
 //
-//   node evals/ablation/tier3-arms.test.mjs
+//   node evals/tier3-arms.test.mjs
 //
 // Run it after ANY edit to the workflow script. `node --check` only parses; it will not catch a
 // reference to a deleted identifier, which is exactly how the MIN_REPS rename nearly shipped broken.
@@ -11,7 +11,7 @@ import { runInNewContext } from 'node:vm'
 // The only code evaluated here is the sibling workflow script — the file under test, read from this
 // script's own directory. It is never user input, and nothing from a test frame reaches the evaluated
 // source. Frames are passed as DATA through the sandbox's `args`, never interpolated into the source.
-const SRC = new URL('../../plugins/ablation/skills/ablation/scripts/tier3-arms.workflow.js', import.meta.url)
+const SRC = new URL('../skills/ablation/scripts/tier3-arms.workflow.js', import.meta.url)
 const raw = readFileSync(SRC, 'utf8').replace('export const meta', 'const meta')
 
 // The script expects the Workflow tool's globals and ends in a top-level return, so it runs inside a

@@ -12,7 +12,7 @@ One skill, no hooks — nothing always-on beyond its listing description. The ex
 
 The instrument has to be checked against reality before its verdicts mean anything: a **positive control**, text you are certain matters, which it must find; and a **placebo**, text you are certain is irrelevant, which it must report as no difference. Both are per worker/grader configuration and expire when the model changes, so a fresh install starts uncalibrated and marks its own reports accordingly.
 
-The workflow script's own test — 31 checks over every frame gate, arm derivation, the grading rule, the tally and the null path, with workers and graders stubbed — lives in the plugin repo: `evals/ablation/tier3-arms.test.mjs`. Run it after any edit to the script; `node --check` only parses, and will not catch a reference to a deleted identifier.
+The workflow script's own test — 31 checks over every frame gate, arm derivation, the grading rule, the tally and the null path, with workers and graders stubbed — lives in the plugin repo: `evals/tier3-arms.test.mjs`. Run it after any edit to the script; `node --check` only parses, and will not catch a reference to a deleted identifier.
 
 ## What it will not tell you
 
@@ -24,10 +24,10 @@ The judge is a language model from the same family as the workers, which bounds 
 
 ## Relation to the other plugins
 
-This is the measurement instrument the others' claims rest on. [`delegation-tiering`](https://github.com/TheRealBillSiegler/claude-plugins/tree/main/plugins/delegation-tiering) and [`steering-claude-code`](https://github.com/TheRealBillSiegler/claude-plugins/tree/main/plugins/steering-claude-code) each make standing claims that certain words improve behaviour; this is how such a claim gets checked rather than assumed. Neither requires it, and it requires neither.
+This is the measurement instrument the others' claims rest on. [`delegation-tiering`](https://github.com/TheRealBillSiegler/delegation-tiering) and [`steering-claude-code`](https://github.com/TheRealBillSiegler/steering-claude-code) each make standing claims that certain words improve behaviour; this is how such a claim gets checked rather than assumed. Neither requires it, and it requires neither.
 
 ## Source fidelity
 
-Claims carry the same provenance tiers as the sibling plugins, defined in the repo's [Anchoring policy](https://github.com/TheRealBillSiegler/claude-plugins/blob/main/docs/REMEDIATION.md#anchoring-policy). The skill's Source section links the live pages behind the method; each claim is mapped to its verbatim supporting text, source and verification date in [docs/research/ablation-claims.md](https://github.com/TheRealBillSiegler/claude-plugins/blob/main/docs/research/ablation-claims.md), with the dated captures beside it.
+Claims carry the same provenance tiers as the sibling plugins, defined in [delegation-tiering's Anchoring policy](https://github.com/TheRealBillSiegler/delegation-tiering/blob/main/docs/REMEDIATION.md#anchoring-policy). The skill's Source section links the live pages behind the method; each claim is mapped to its verbatim supporting text, source and verification date in [docs/research/ablation-claims.md](https://github.com/TheRealBillSiegler/ablation/blob/main/docs/research/ablation-claims.md), with the dated captures beside it.
 
-The claims map, the captures, the script's test, the report renderer, the validation record and the raw calibration outputs all live in the plugin repo — under [docs/research/](https://github.com/TheRealBillSiegler/claude-plugins/tree/main/docs/research) and [evals/ablation/](https://github.com/TheRealBillSiegler/claude-plugins/tree/main/evals/ablation) — not in the installed payload. The payload carries only what the model reads to do the work.
+The claims map, the captures, the script's test, the report renderer, the validation record and the raw calibration outputs all live in the plugin repo — under [docs/research/](https://github.com/TheRealBillSiegler/ablation/tree/main/docs/research) and [evals/](https://github.com/TheRealBillSiegler/ablation/tree/main/evals) — not in the installed payload. The payload carries only what the model reads to do the work.
