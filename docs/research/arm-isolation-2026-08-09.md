@@ -1,6 +1,6 @@
 # Ablation-arm isolation for hooks, rules, and skills
 
-Research for [issue #4](https://github.com/TheRealBillSiegler/claude-plugins/issues/4). Question: a controlled ablation study must run matched Claude Code sessions WITH and WITHOUT a component that is a user-level PreToolUse hook, a user-level rules file (`~/.claude/rules/*.md`), or a skill. What is the sharpest viable per-arm isolation mechanism?
+Research for [issue #4](https://github.com/TheRealBillSiegler/siegler-plugins/issues/4). Question: a controlled ablation study must run matched Claude Code sessions WITH and WITHOUT a component that is a user-level PreToolUse hook, a user-level rules file (`~/.claude/rules/*.md`), or a skill. What is the sharpest viable per-arm isolation mechanism?
 
 Method: primary sources only — code.claude.com/docs pages, fetched directly, quoted verbatim where the claim is load-bearing — plus direct reads of the local ablation skill's asset files. One GitHub issue is cited for a known footgun; it is flagged as secondary (repo issue tracker, not docs). Every claim below is either quoted-and-cited or marked UNVERIFIED.
 
