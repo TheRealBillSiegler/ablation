@@ -1,0 +1,65 @@
+name: CI
+
+# Read-only validation only: no publish, no release or tag creation, no artifact
+# upload. The permissions block below pins least-privilege `contents: read`; do
+# not raise it without explicit maintainer approval.
+#
+# Everything here is deterministic and offline: the test suite runs the
+# workflow script as a stubbed sandbox, so no ANTHROPIC_API_KEY and no model
+# inference is involved, and forked PRs run with no secrets.
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+    # ready_for_review is not a default activity type; without it a draft
+    # flipped to ready would never get a CI run.
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# Superseded runs waste runner time and delay fresh results: cancel them.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Link and test checks
+    # Draft PRs skip CI; flipping to ready triggers the one real run. The guard
+    # must pass push events through: they carry no pull_request context.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    # Every job sets timeout-minutes: the GitHub default is 360, so one hung job
+    # could burn a large slice of the monthly included minutes.
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+      - name: Links resolve and the shipped payload is self-contained
+        run: node scripts/check-links.js
+      - name: Workflow script test suite
+        run: node --test evals/
+
+  version-bump:
+    name: Plugin version raised when the plugin changes
+    if: github.event_name == 'pull_request' && !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          # The guard diffs against the base commit and reads the released
+          # version from origin/main; a shallow clone lacks both.
+          fetch-depth: 0
+      - name: Check plugin version against the released baseline
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/check-version-bump.js "$BASE" "$HEAD"

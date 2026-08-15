@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ablation",
+  "description": "A single skill: tests whether a piece of instruction text still earns its place, by running matched tasks with and without it under blind judging — and reports the smallest difference the design could have detected.",
+  "owner": {
+    "name": "Bill Siegler",
+    "url": "https://github.com/TheRealBillSiegler"
+  },
+  "plugins": [
+    {
+      "name": "ablation",
+      "description": "A single skill: tests whether a piece of instruction text still earns its place, by running matched tasks with and without it under blind judging — and reports the smallest difference the design could have detected.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

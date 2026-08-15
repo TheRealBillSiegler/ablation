@@ -8,6 +8,26 @@ One skill, no hooks — nothing always-on beyond its listing description. The ex
 | --- | --- | --- |
 | `skills/ablation/` | Three levels of testing, cheapest first: live without it, reason about it, then the controlled experiment. The experiment is a workflow script, so the rules of the test are enforced by code rather than by remembering them. | You suspect a line has stopped earning its place, you are choosing between two wordings, or a model upgrade has expired an earlier answer |
 
+## Install
+
+**Via the central marketplace**, alongside Bill Siegler's other plugins:
+
+```bash
+/plugin marketplace add TheRealBillSiegler/siegler-plugins
+/plugin install ablation@siegler-plugins
+```
+
+**Direct from this repo**, standalone:
+
+```bash
+/plugin marketplace add TheRealBillSiegler/ablation
+/plugin install ablation@ablation
+```
+
+The doubled name is correct — this repo self-registers as a one-plugin marketplace, so the marketplace name and the plugin name are both `ablation`.
+
+Then restart or run `/reload-plugins` — no install form takes effect in a running session.
+
 ## Verify
 
 The instrument has to be checked against reality before its verdicts mean anything: a **positive control**, text you are certain matters, which it must find; and a **placebo**, text you are certain is irrelevant, which it must report as no difference. Both are per worker/grader configuration and expire when the model changes, so a fresh install starts uncalibrated and marks its own reports accordingly.
