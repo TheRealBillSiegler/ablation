@@ -1,0 +1,280 @@
+{
+  "verdict": "UNRESOLVED",
+  "stamp": "SUBSTITUTION POSITIVE CONTROL (clear wording vs vague rewrite) — workers+graders claude-sonnet-5 (medium); orchestrator claude-opus-5; 2026-08-10",
+  "attempt": 1,
+  "priorRun": null,
+  "componentUnderTest": "- All test files use the suffix _spec.py, never the test_ prefix convention.\n",
+  "steeringUnderTest": "Project conventions — testing\n\n- Tests live under tests/ mirroring the package layout.\n- All test files use the suffix _spec.py, never the test_ prefix convention.\n- Use pytest; no unittest.TestCase subclasses.\n- Each test asserts one behavior; name the test after the behavior, not the function.\n- Fixtures go in conftest.py at the narrowest scope that works.\n",
+  "probesUnderTest": [
+    "Write a unit test for a function parse_row(line: str) -> dict that splits a CSV line into named fields. State the file name you would save the test as, then give the full test code.",
+    "We fixed a bug where load_config returned None instead of raising KeyError for missing keys. Add a regression test. State the test file path and the code.",
+    "Create a test module for the retry decorator in utils/retry.py (it retries a function up to 3 times on exception). Show the complete file including its path."
+  ],
+  "mode": "substitution",
+  "replacementText": "- Test files should follow the project's usual naming convention.\n",
+  "armLabels": {
+    "a": "with the ORIGINAL",
+    "b": "with the REWRITE",
+    "sideA": "the ORIGINAL",
+    "sideB": "the REWRITE"
+  },
+  "calibrationNote": "UNCALIBRATED: substitution mode is a distinct measurement claim, and no substitution-mode controls are attested for this run. Its verdicts count only once VALIDATION.md records, for this worker/grader configuration, a positive control (a clear wording beating a deliberately vague rewrite of it), a meaning-preserving placebo (a cosmetic rewrite returning NO-DIFFERENCE), and a length placebo (the same substance at markedly different length, also returning NO-DIFFERENCE — the check for verbosity bias).",
+  "calibratedBy": null,
+  "versionShapes": {
+    "originalChars": 77,
+    "replacementChars": 66,
+    "deltaChars": -11,
+    "originalLines": 2,
+    "replacementLines": 2
+  },
+  "criterion": "The response names or saves Python test files with a _spec.py suffix rather than a test_ prefix.",
+  "design": {
+    "probes": 3,
+    "repsPerArm": 5,
+    "grading": "double-query order-consistent",
+    "alpha": 0.05,
+    "mode": "substitution"
+  },
+  "statistics": {
+    "alpha": 0.05,
+    "pooled": {
+      "ctrlOnly": 14,
+      "ablOnly": 0,
+      "pOneSided": 0.00006103515625,
+      "direction": "better-original"
+    },
+    "health": {
+      "pairsPlanned": 15,
+      "workerFailures": 0,
+      "graderFailures": 0,
+      "inconsistentPairs": 0,
+      "workerFailureRate": 0,
+      "graderFailureRate": 0,
+      "judgeFlipRate": 0
+    },
+    "forcedPicks": 14,
+    "minForcedToReachBar": 5,
+    "usablePairs": 14,
+    "detectability": [
+      {
+        "convertShare": 0.2,
+        "chanceCaught": 13
+      },
+      {
+        "convertShare": 0.4,
+        "chanceCaught": 72.1
+      },
+      {
+        "convertShare": 0.6,
+        "chanceCaught": 98.2
+      },
+      {
+        "convertShare": 0.8,
+        "chanceCaught": 100
+      }
+    ],
+    "familywise": 0.0909,
+    "note": "reported evidence strength only — thresholds decide the verdict, statistics quantify it; p-values are one-sided in the direction the data favored (a direction-blind reading doubles them); familywise is Sidak on the smallest per-probe p, conservative under the positive dependence of shared workers; detectability is design-level at fixed hypothetical conversion shares, never at the observed effect"
+  },
+  "perProbe": [
+    {
+      "probe": "Write a unit test for a function parse_row(line: str) -> dict that splits a CSV line into named fields. State the file name you would save the test as, then give the full test code.",
+      "n": 5,
+      "droppedFailed": 0,
+      "droppedGraderFailed": 0,
+      "droppedInconsistent": 0,
+      "ctrlPass": 5,
+      "ablPass": 0,
+      "both": 0,
+      "neither": 0,
+      "lowN": false,
+      "degraded": true,
+      "harmful": false,
+      "stats": {
+        "ctrlOnly": 5,
+        "ablOnly": 0,
+        "pOneSided": 0.03125,
+        "direction": "better-original",
+        "ctrlCI95": [
+          0.478,
+          1
+        ],
+        "ablCI95": [
+          0,
+          0.522
+        ]
+      },
+      "reps": [
+        {
+          "rep": 1,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 2,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 3,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 4,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 5,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        }
+      ],
+      "evidence": [
+        "rep 1 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the test as tests/csvutil/parser_spec.py (a _spec.py suffix), while Y saves it as tests/test_parse_row.py (a test_ prefix).",
+        "rep 2 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the test as tests/parser_spec.py (uses the _spec.py suffix), while Y saves it as tests/test_csvutils.py (uses the test_ prefix).",
+        "rep 3 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the test as tests/csvtools/parser_spec.py (_spec.py suffix), while Y saves it as tests/test_parse_row.py (test_ prefix).",
+        "rep 4 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/parser/parse_row_spec.py (a _spec.py suffix), while Y names it tests/test_csv_utils.py (a test_ prefix).",
+        "rep 5 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the test as tests/parse_row_spec.py (a _spec.py suffix), while Y saves it as tests/test_csv_utils.py (a test_ prefix)."
+      ]
+    },
+    {
+      "probe": "We fixed a bug where load_config returned None instead of raising KeyError for missing keys. Add a regression test. State the test file path and the code.",
+      "n": 5,
+      "droppedFailed": 0,
+      "droppedGraderFailed": 0,
+      "droppedInconsistent": 0,
+      "ctrlPass": 5,
+      "ablPass": 0,
+      "both": 0,
+      "neither": 0,
+      "lowN": false,
+      "degraded": true,
+      "harmful": false,
+      "stats": {
+        "ctrlOnly": 5,
+        "ablOnly": 0,
+        "pOneSided": 0.03125,
+        "direction": "better-original",
+        "ctrlCI95": [
+          0.478,
+          1
+        ],
+        "ablCI95": [
+          0,
+          0.522
+        ]
+      },
+      "reps": [
+        {
+          "rep": 1,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 2,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 3,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 4,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 5,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        }
+      ],
+      "evidence": [
+        "rep 1 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/config_spec.py (the _spec.py suffix), while Y saves it as tests/test_config.py (the test_ prefix).",
+        "rep 2 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/config_spec.py using the _spec.py suffix; Y names it tests/test_config.py using the test_ prefix.",
+        "rep 3 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/config_spec.py (spec suffix), while Y names it tests/test_config.py (test_ prefix).",
+        "rep 4 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/config_spec.py (a _spec.py suffix), while Y uses tests/test_config.py (a test_ prefix).",
+        "rep 5 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/config/load_config_spec.py (_spec.py suffix), while Y uses tests/test_config.py (test_ prefix)."
+      ]
+    },
+    {
+      "probe": "Create a test module for the retry decorator in utils/retry.py (it retries a function up to 3 times on exception). Show the complete file including its path.",
+      "n": 4,
+      "droppedFailed": 0,
+      "droppedGraderFailed": 0,
+      "droppedInconsistent": 0,
+      "ctrlPass": 4,
+      "ablPass": 0,
+      "both": 0,
+      "neither": 0,
+      "lowN": true,
+      "degraded": false,
+      "harmful": false,
+      "stats": {
+        "ctrlOnly": 4,
+        "ablOnly": 0,
+        "pOneSided": 0.0625,
+        "direction": "better-original",
+        "ctrlCI95": [
+          0.398,
+          1
+        ],
+        "ablCI95": [
+          0,
+          0.602
+        ]
+      },
+      "reps": [
+        {
+          "rep": 1,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 2,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 4,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        },
+        {
+          "rep": 5,
+          "status": "ok",
+          "withPassed": true,
+          "withoutPassed": false
+        }
+      ],
+      "evidence": [
+        "rep 1 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/utils/retry_spec.py (the _spec.py suffix), while Y saves it as tests/utils/test_retry.py (the test_ prefix).",
+        "rep 2 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/utils/retry_spec.py (the _spec.py suffix), while Y uses tests/utils/test_retry.py (the test_ prefix).",
+        "rep 4 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names its file tests/utils/retry_spec.py (the _spec.py suffix), while Y names its file tests/utils/test_retry.py (the test_ prefix).",
+        "rep 5 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/utils/retry_spec.py (the _spec.py suffix), while Y names it tests/utils/test_retry.py (the test_ prefix)."
+      ]
+    }
+  ],
+  "unresolvedReasons": [
+    "a probe fell below the 5-rep floor (derived from alpha=0.05) after dropped/inconsistent grader pairs"
+  ],
+  "recommendedAction": "do not act — a probe fell below the 5-rep floor (derived from alpha=0.05) after dropped/inconsistent grader pairs; re-run with fresh frame approval and attempt=2",
+  "report": "Ablation verdict (substitution mode): UNRESOLVED\nStamp: SUBSTITUTION POSITIVE CONTROL (clear wording vs vague rewrite) — workers+graders claude-sonnet-5 (medium); orchestrator claude-opus-5; 2026-08-10 — 3 probes x 5 reps x 2 arms, double-query grading, attempt 1\nCriterion: The response names or saves Python test files with a _spec.py suffix rather than a test_ prefix.\nUNCALIBRATED: no substitution-mode controls attested — this verdict does not yet count (see VALIDATION.md)\nVersion shapes (uncontrolled confound, reported): original 77 chars / 2 lines, rewrite 66 chars / 2 lines, delta -11 chars\nExact statistics (reported, not verdict-determining; alpha=0.05 pre-registered): pooled forced picks 14 favoring the ORIGINAL vs 0 favoring the REWRITE — one-sided sign-test p=6.1e-5; chance any of 3 tasks shows its standout gap under no effect: p=0.091\nInstrument health: 0/15 worker failures (0%), 0 grader failures (0%), 0 judge flip-flops (0%)\nDesign sensitivity (14 usable pairs, bar alpha=0.05, needs >=5 clear wins): an effect converting 40% of pairs into clear wins for the ORIGINAL is caught 72.1% of the time; 80% -> 100%. Observed forced picks: 14\nP1 (n=5, dropped 0 failed/0 inconsistent): the ORIGINAL 5/5, the REWRITE 0/5, verdict mix both=0 neither=0 forced=5, p=0.031 — the ORIGINAL AHEAD\nP2 (n=5, dropped 0 failed/0 inconsistent): the ORIGINAL 5/5, the REWRITE 0/5, verdict mix both=0 neither=0 forced=5, p=0.031 — the ORIGINAL AHEAD\nP3 (n=4, dropped 0 failed/0 inconsistent): the ORIGINAL 4/4, the REWRITE 0/4, verdict mix both=0 neither=0 forced=4, p=0.063 — BELOW REPS FLOOR\nAction: do not act — a probe fell below the 5-rep floor (derived from alpha=0.05) after dropped/inconsistent grader pairs; re-run with fresh frame approval and attempt=2\nOriginal text (verbatim):\n```\n- All test files use the suffix _spec.py, never the test_ prefix convention.\n\n```\nRewrite tested against it (verbatim):\n```\n- Test files should follow the project's usual naming convention.\n\n```"
+}

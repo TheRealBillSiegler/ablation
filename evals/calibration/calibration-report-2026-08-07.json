@@ -1,0 +1,735 @@
+{
+  "title": "Did the detector work? Testing the delete-and-compare test with a rule we know matters and a line we know does not",
+  "stamp": "POSITIVE CONTROL calibration — workers+graders claude-sonnet-5 (medium); orchestrator claude-fable-5; 2026-08-07 | PLACEBO calibration — workers+graders claude-sonnet-5 (medium); orchestrator claude-fable-5; 2026-08-07",
+  "verdict": "NEEDED + NOT NEEDED",
+  "verdictClass": "good",
+  "banner": "\"- All test files use the suffix _spec.py, never the test_ prefix conve…\" -> NEEDED: passed 15 of 15 WITH the text, 0 of 15 WITHOUT it  |  \"- The project mascot is a blue heron named Stilts.\" -> NOT NEEDED: passed 10 of 11 WITH the text, 10 of 11 WITHOUT it",
+  "rules": [
+    "A version wins \"NEEDED\" for a task when at least two-thirds of the repeats passed WITH the text and at least two-thirds failed WITHOUT it. (per-task flag in the code: degraded = ctrlPass >= ceil(2n/3) && (n - ablPass) >= ceil(2n/3))",
+    "\"DOING HARM\" is the mirror image: passes WITHOUT it, fails WITH the text. (per-task flag in the code: harmful = ablPass >= ceil(2n/3) && (n - ctrlPass) >= ceil(2n/3))",
+    "\"NOT NEEDED\" requires every task to show no meaningful gap between the two versions. (allNoDelta: every probe has |ctrlPass - ablPass| <= floor(n/3))",
+    "Any task left with fewer usable repeats than its significance level demands (5 at the standard 0.05 setting; never fewer than 3) makes the whole run INCONCLUSIVE — never guessed around. (lowN = n < max(3, ceil(-log2(alpha))) -> UNRESOLVED)",
+    "Every paired answer is judged twice with the labels swapped; it counts only if the judge says the same thing both times. Failed workers and disagreeing judgments are thrown out, not scored.",
+    "The report also shows, per task and overall, how often a gap this big would show up by chance IF the text truly made no difference. It is NOT the chance the verdict is wrong. The number is figured for the direction the data leaned; a reader who did not pick a direction in advance should double it. Evidence strength only; it never decides the verdict. (one-sided exact McNemar sign test on the forced picks: p = P(Binomial(b+c, 0.5) >= max(b,c)))",
+    "Looking at several tasks gives luck several chances, so the standout task’s fluke chance is also shown corrected for the number of tasks examined. The correction treats tasks as independent — a simplification that errs on the cautious side here, understating significance rather than inflating it. (Sidak: 1 - (1 - min p)^tasks)",
+    "Each \"What this test could have caught\" table supposes the text really matters at fixed strengths and shows the chance the run design reaches the bar — never figured from the observed result, because quoting how good a run was at catching the very effect it happened to see would be circular (statisticians call that \"observed power\")."
+  ],
+  "rulesNote": "The verdict cutoffs are screening rules with fixed constants; the fluke-chance numbers (p-values) and 95% ranges are exact statistics reported alongside them (added 2026-08-09) so the strength of each verdict is visible. \"NOT NEEDED\" means \"no difference detected at this sample size\" — weaker than proof that the two versions are equivalent. Internal verdict names in the raw data for this report: NEEDED=LOAD-BEARING, DOING HARM=HARMFUL, NOT NEEDED=CEREMONY, INCONCLUSIVE=UNRESOLVED.",
+  "glossary": [
+    {
+      "term": "forced pick",
+      "def": "A repeat where the blind judges said one version passed and the other failed — consistently, in both label orders. The only repeats that carry direction."
+    },
+    {
+      "term": "usable repeat",
+      "def": "A repeat that survived to be scored: the worker produced output and the two blind judgings agreed once the labels were swapped."
+    },
+    {
+      "term": "worker",
+      "def": "The model that performed the task and wrote an answer."
+    },
+    {
+      "term": "grader",
+      "def": "The model that compared a pair of answers, blind, against the pre-registered question."
+    },
+    {
+      "term": "the bar",
+      "def": "The significance level (alpha) chosen before the run. A fluke chance at or under the bar counts as statistically clear."
+    },
+    {
+      "term": "fluke chance",
+      "def": "The p-value: how often a gap this big would show up by chance IF the text truly made no difference. Not the chance the verdict is wrong."
+    },
+    {
+      "term": "clear win",
+      "def": "A forced pick favoring the WITH side."
+    }
+  ],
+  "finePrint": [
+    "Best-case numbers: the hypothetical assumes every changed repeat lands in favor of the WITH side — the rest tie, none go the other way.",
+    "A fluke chance is NOT the chance the verdict is wrong — it answers \"how often would luck alone produce this?\", assuming the text changed nothing.",
+    "Fluke chances are one-sided, figured for the direction the data leaned; a reader who did not pick a direction in advance should double them.",
+    "The multiple-looks correction treats tasks as independent — a simplification that errs on the cautious side, understating significance.",
+    "Statistics are reported only; they never decide the verdict. The pre-registered screening rules decide."
+  ],
+  "sections": [
+    {
+      "heading": "What was tested — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "table": {
+        "columns": [
+          "Item",
+          "Detail"
+        ],
+        "rows": [
+          [
+            "Verdict",
+            "NEEDED — behavior got worse without it (internal name: LOAD-BEARING)"
+          ],
+          [
+            "Text under test (deleted verbatim in the second version)",
+            "- All test files use the suffix _spec.py, never the test_ prefix convention."
+          ],
+          [
+            "Question the judges answered",
+            "The response names or saves Python test files with a _spec.py suffix rather than a test_ prefix."
+          ],
+          [
+            "Design",
+            "3 tasks × 5 repeats × 2 versions (with / without); every pair judged twice with the labels swapped"
+          ],
+          [
+            "Model + date stamp — \"workers\" answered the tasks, \"graders\" judged the pairs (verdicts expire on model change)",
+            "POSITIVE CONTROL calibration — workers+graders claude-sonnet-5 (medium); orchestrator claude-fable-5; 2026-08-07"
+          ],
+          [
+            "Attempt",
+            "3"
+          ],
+          [
+            "Earlier attempts (operator log, quoted verbatim from the run record)",
+            "attempt 1 (2026-08-07): UNRESOLVED via reps-floor — surviving reps ctrl 8/8 vs abl 0/8, P1+P3 DEGRADED, one inconsistent grader pair dropped P2 to n=2. attempt 2: stopped mid-run — calibration exposed environment contamination (workers acted on the real filesystem); template hardened with text-only output contract + worktree isolation. Frame unchanged throughout."
+          ],
+          [
+            "Recommended action",
+            "keep — and consider promoting to a deterministic mechanism that retires the line"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "How strong is the evidence? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "Reported only — the pre-registered screening rules decide the verdict.{{^5}}",
+      "table": {
+        "columns": [
+          "What was measured",
+          "Value"
+        ],
+        "rows": [
+          [
+            "{{Forced pick}}s — repeats where judges picked a side",
+            "15 favored the WITH side, 0 favored the WITHOUT side"
+          ],
+          [
+            "{{Fluke chance}}, all tasks combined{{^2}}{{^3}}",
+            "under 0.1% (p=3.1e-5)"
+          ],
+          [
+            "Standout task, corrected for examining 3 tasks{{^4}}",
+            "p=0.091"
+          ]
+        ]
+      },
+      "howToRead": [
+        "Forced picks: the raw signal — which version won when the judges could tell the answers apart. Ties (both passed / neither passed) carry no direction.",
+        "Fluke chance: if the text truly made no difference, a split this lopsided would show up by chance this often.",
+        "Standout task: looking at 3 tasks gives luck 3 chances; the correction accounts for that.",
+        "The bar: a fluke chance at or under it counts as statistically clear."
+      ]
+    },
+    {
+      "heading": "Did the text matter, task by task? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "5× WITH the text, 5× WITHOUT it, per task; blind judges compared each pair.{{^5}}",
+      "howToRead": [
+        "What this shows: for each task, the share of {{usable repeat}}s that passed WITH the text vs WITHOUT it.",
+        "How it was judged: every pair was judged twice with the labels swapped; a repeat counts only when the two judgments agree.{{^2}}",
+        "Watch out: \"Thrown out\" repeats are dropped, never scored — few usable repeats weaken every number for that task. A \"-\" in the grader slot means that run predates separate grader-failure tracking (counted under worker failures).",
+        "Drill down: hover a bar for detail; click a task below the table for its rep-by-rep record."
+      ],
+      "chart": {
+        "label": "Share of usable repeats that passed, WITH the text vs WITHOUT it, per task",
+        "yUnit": "%",
+        "yMax": 100,
+        "series": [
+          "Passed WITH the text",
+          "Passed WITHOUT it"
+        ],
+        "groups": [
+          {
+            "label": "Task 1",
+            "values": [
+              100,
+              0
+            ],
+            "short": [
+              "5/5",
+              "0/5"
+            ],
+            "notes": [
+              "Task 1, WITH the text: 5 of 5 usable repeats passed",
+              "Task 1, WITHOUT it: 0 of 5 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 2",
+            "values": [
+              100,
+              0
+            ],
+            "short": [
+              "5/5",
+              "0/5"
+            ],
+            "notes": [
+              "Task 2, WITH the text: 5 of 5 usable repeats passed",
+              "Task 2, WITHOUT it: 0 of 5 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 3",
+            "values": [
+              100,
+              0
+            ],
+            "short": [
+              "5/5",
+              "0/5"
+            ],
+            "notes": [
+              "Task 3, WITH the text: 5 of 5 usable repeats passed",
+              "Task 3, WITHOUT it: 0 of 5 usable repeats passed"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "Task",
+          "Usable repeats",
+          "Passed WITH the text",
+          "Passed WITHOUT it",
+          "Judges: both passed",
+          "Judges: neither passed",
+          "Judges: picked one side",
+          "Thrown out (worker failed / grader failed / judges disagreed)",
+          "{{Fluke chance}} for this task{{^2}}{{^3}}",
+          "Result for this task"
+        ],
+        "rows": [
+          [
+            "Task 1",
+            5,
+            "5 of 5",
+            "0 of 5",
+            0,
+            0,
+            5,
+            "0 / - / 0",
+            "3.1% (p=0.031)",
+            "WORSE WITHOUT IT"
+          ],
+          [
+            "Task 2",
+            5,
+            "5 of 5",
+            "0 of 5",
+            0,
+            0,
+            5,
+            "0 / - / 0",
+            "3.1% (p=0.031)",
+            "WORSE WITHOUT IT"
+          ],
+          [
+            "Task 3",
+            5,
+            "5 of 5",
+            "0 of 5",
+            0,
+            0,
+            5,
+            "0 / - / 0",
+            "3.1% (p=0.031)",
+            "WORSE WITHOUT IT"
+          ]
+        ]
+      },
+      "drilldown": [
+        {
+          "summary": "Task 1: Write a unit test for a function parse_row(line: str) -> dict that splits a CSV line into named fields. State … — rep-by-rep record (5 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): WITH the text 48%–100%, WITHOUT it 0%–52%.",
+            "r1: X names the file tests/parse_row_spec.py (_spec.py suffix), while Y names tests/test_parse_row.py (test_ prefix).",
+            "r2: X saves as parse_row_spec.py (the _spec.py suffix); Y saves as tests/test_parse_row.py (the test_ prefix).",
+            "r3: X saves the file as parse_row_spec.py (suffix), while Y uses tests/test_parse_row.py (prefix).",
+            "r4: X saves the test as parse_row_spec.py (the _spec.py suffix), while Y uses tests/test_parse_row.py (the test_ prefix).",
+            "r5: X names the file parse_row_spec.py (the _spec.py suffix) while Y names it tests/test_parse_row.py (the test_ prefix)."
+          ]
+        },
+        {
+          "summary": "Task 2: We fixed a bug where load_config returned None instead of raising KeyError for missing keys. Add a regression … — rep-by-rep record (5 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): WITH the text 48%–100%, WITHOUT it 0%–52%.",
+            "r1: X names the file tests/config_loader_spec.py (using the _spec.py suffix), while Y names it tests/test_config.py (using the test_ prefix).",
+            "r2: X saves the test as tests/config/load_config_spec.py (_spec.py suffix), while Y uses tests/test_config.py (test_ prefix).",
+            "r3: X names the file tests/load_config_spec.py (_spec.py suffix), while Y names it tests/test_config.py (test_ prefix).",
+            "r4: X uses tests/config/load_config_spec.py (a _spec.py suffix); Y uses tests/test_config.py (a test_ prefix).",
+            "r5: X names the file tests/load_config_spec.py (_spec.py suffix), while Y uses tests/test_config.py (test_ prefix)."
+          ]
+        },
+        {
+          "summary": "Task 3: Create a test module for the retry decorator in utils/retry.py (it retries a function up to 3 times on excepti… — rep-by-rep record (5 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): WITH the text 48%–100%, WITHOUT it 0%–52%.",
+            "r1: X saves the file as tests/retry_spec.py (suffix), while Y uses tests/test_retry.py (prefix).",
+            "r2: X saves the file as utils/retry_spec.py while Y saves it as tests/test_retry.py, so only X uses the _spec.py suffix.",
+            "r3: X saves the file as utils/retry_spec.py (underscore-spec suffix), while Y uses tests/utils/test_retry.py (test_ prefix).",
+            "r4: X names the file tests/utils/retry_spec.py (suffix), while Y names it tests/utils/test_retry.py (prefix).",
+            "r5: X names its file utils/retry_spec.py (a _spec.py suffix), while Y names its file tests/test_retry.py (a test_ prefix)."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Could this test have seen a difference at all? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "If the text really did help, would this run have noticed? Each row imagines a different size of \"really better\" — from changing the result in 20% of tries to 80% — and shows the chance this test would have caught it.{{^1}} This run produced 15 {{forced pick}}s (5 needed to reach {{the bar}}).",
+      "howToRead": [
+        "How it was figured: detection chance = the chance that at least 5 of the 15 {{usable repeat}}s become {{clear win}}s for the WITH side, when each repeat converts with the row's probability.{{^1}}",
+        "Watch out: always figured at fixed hypothetical strengths, never from the observed result — quoting how good a run was at catching the very effect it happened to see would be circular (statisticians call that \"observed power\")."
+      ],
+      "chart": {
+        "label": "Chance this design catches an effect, by hypothetical effect strength",
+        "yUnit": "%",
+        "yMax": 100,
+        "groups": [
+          {
+            "label": "20% converted",
+            "values": [
+              16.4
+            ],
+            "short": [
+              "16.4%"
+            ],
+            "notes": [
+              "If 20% of repeats became clear wins for the WITH side, this design would catch it 16.4% of the time (best case)"
+            ]
+          },
+          {
+            "label": "40% converted",
+            "values": [
+              78.3
+            ],
+            "short": [
+              "78.3%"
+            ],
+            "notes": [
+              "If 40% of repeats became clear wins for the WITH side, this design would catch it 78.3% of the time (best case)"
+            ]
+          },
+          {
+            "label": "60% converted",
+            "values": [
+              99.1
+            ],
+            "short": [
+              "99.1%"
+            ],
+            "notes": [
+              "If 60% of repeats became clear wins for the WITH side, this design would catch it 99.1% of the time (best case)"
+            ]
+          },
+          {
+            "label": "80% converted",
+            "values": [
+              100
+            ],
+            "short": [
+              "100%"
+            ],
+            "notes": [
+              "If 80% of repeats became clear wins for the WITH side, this design would catch it 100% of the time (best case)"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "If this share of repeats really became clear wins for the WITH side",
+          "Chance this design would have caught it (best case)"
+        ],
+        "rows": [
+          [
+            "20%",
+            "16.4%"
+          ],
+          [
+            "40%",
+            "78.3%"
+          ],
+          [
+            "60%",
+            "99.1%"
+          ],
+          [
+            "80%",
+            "100%"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "What was tested — \"- The project mascot is a blue heron named Stilts.\"",
+      "table": {
+        "columns": [
+          "Item",
+          "Detail"
+        ],
+        "rows": [
+          [
+            "Verdict",
+            "NOT NEEDED — no detectable difference at this sample size (internal name: CEREMONY)"
+          ],
+          [
+            "Text under test (deleted verbatim in the second version)",
+            "- The project mascot is a blue heron named Stilts."
+          ],
+          [
+            "Question the judges answered",
+            "The response provides a complete, runnable test for the requested behavior."
+          ],
+          [
+            "Design",
+            "3 tasks × 5 repeats × 2 versions (with / without); every pair judged twice with the labels swapped"
+          ],
+          [
+            "Model + date stamp — \"workers\" answered the tasks, \"graders\" judged the pairs (verdicts expire on model change)",
+            "PLACEBO calibration — workers+graders claude-sonnet-5 (medium); orchestrator claude-fable-5; 2026-08-07"
+          ],
+          [
+            "Attempt",
+            "2"
+          ],
+          [
+            "Earlier attempts (operator log, quoted verbatim from the run record)",
+            "attempt 1 (2026-08-07): UNRESOLVED — P1 fell to n=1 on two inconsistent grader pairs; P2 all-neither (workers refused, anchoring on the real repo); P3 spurious BETTER WITHOUT driven by cross-arm filesystem contamination. Instrument defect found and fixed (text-only contract + worktree isolation); frame unchanged."
+          ],
+          [
+            "Recommended action",
+            "delete only if the component has no violation history — otherwise raise reps and re-run (text preserved in the report for paste-back restoration)"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "How strong is the evidence? — \"- The project mascot is a blue heron named Stilts.\"",
+      "intro": "Reported only — the pre-registered screening rules decide the verdict.{{^5}}",
+      "table": {
+        "columns": [
+          "What was measured",
+          "Value"
+        ],
+        "rows": [
+          [
+            "{{Forced pick}}s — repeats where judges picked a side",
+            "1 favored the WITH side, 1 favored the WITHOUT side"
+          ],
+          [
+            "{{Fluke chance}}, all tasks combined{{^2}}{{^3}}",
+            "75% (p=0.75)"
+          ],
+          [
+            "Standout task, corrected for examining 3 tasks{{^4}}",
+            "p=0.984"
+          ]
+        ]
+      },
+      "howToRead": [
+        "Forced picks: the raw signal — which version won when the judges could tell the answers apart. Ties (both passed / neither passed) carry no direction.",
+        "Fluke chance: if the text truly made no difference, a split this lopsided would show up by chance this often.",
+        "Standout task: looking at 3 tasks gives luck 3 chances; the correction accounts for that.",
+        "The bar: a fluke chance at or under it counts as statistically clear."
+      ]
+    },
+    {
+      "heading": "Did the text matter, task by task? — \"- The project mascot is a blue heron named Stilts.\"",
+      "intro": "5× WITH the text, 5× WITHOUT it, per task; blind judges compared each pair.{{^5}}",
+      "howToRead": [
+        "What this shows: for each task, the share of {{usable repeat}}s that passed WITH the text vs WITHOUT it.",
+        "How it was judged: every pair was judged twice with the labels swapped; a repeat counts only when the two judgments agree.{{^2}}",
+        "Watch out: \"Thrown out\" repeats are dropped, never scored — few usable repeats weaken every number for that task. A \"-\" in the grader slot means that run predates separate grader-failure tracking (counted under worker failures).",
+        "Drill down: hover a bar for detail; click a task below the table for its rep-by-rep record."
+      ],
+      "chart": {
+        "label": "Share of usable repeats that passed, WITH the text vs WITHOUT it, per task",
+        "yUnit": "%",
+        "yMax": 100,
+        "series": [
+          "Passed WITH the text",
+          "Passed WITHOUT it"
+        ],
+        "groups": [
+          {
+            "label": "Task 1",
+            "values": [
+              100,
+              100
+            ],
+            "short": [
+              "3/3",
+              "3/3"
+            ],
+            "notes": [
+              "Task 1, WITH the text: 3 of 3 usable repeats passed",
+              "Task 1, WITHOUT it: 3 of 3 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 2",
+            "values": [
+              67,
+              67
+            ],
+            "short": [
+              "2/3",
+              "2/3"
+            ],
+            "notes": [
+              "Task 2, WITH the text: 2 of 3 usable repeats passed",
+              "Task 2, WITHOUT it: 2 of 3 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 3",
+            "values": [
+              100,
+              100
+            ],
+            "short": [
+              "5/5",
+              "5/5"
+            ],
+            "notes": [
+              "Task 3, WITH the text: 5 of 5 usable repeats passed",
+              "Task 3, WITHOUT it: 5 of 5 usable repeats passed"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "Task",
+          "Usable repeats",
+          "Passed WITH the text",
+          "Passed WITHOUT it",
+          "Judges: both passed",
+          "Judges: neither passed",
+          "Judges: picked one side",
+          "Thrown out (worker failed / grader failed / judges disagreed)",
+          "{{Fluke chance}} for this task{{^2}}{{^3}}",
+          "Result for this task"
+        ],
+        "rows": [
+          [
+            "Task 1",
+            3,
+            "3 of 3",
+            "3 of 3",
+            3,
+            0,
+            0,
+            "0 / - / 2",
+            "no forced picks",
+            "no difference"
+          ],
+          [
+            "Task 2",
+            3,
+            "2 of 3",
+            "2 of 3",
+            1,
+            0,
+            2,
+            "0 / - / 2",
+            "75% (p=0.75)",
+            "no difference"
+          ],
+          [
+            "Task 3",
+            5,
+            "5 of 5",
+            "5 of 5",
+            5,
+            0,
+            0,
+            "0 / - / 0",
+            "no forced picks",
+            "no difference"
+          ]
+        ]
+      },
+      "drilldown": [
+        {
+          "summary": "Task 1: Write a unit test for a function parse_row(line: str) -> dict that splits a CSV line into named fields. State … — rep-by-rep record (3 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): WITH the text 29%–100%, WITHOUT it 29%–100%.",
+            "r1: Both X and Y give a complete pytest file (import, four test cases covering split/empty-field/newline/error) with a stated filename and a run path is implied by pytest conventions; neither is more or less runnable than the other since both equally assume an unstated field schema.",
+            "r2: Both name a file and provide complete, syntactically valid pytest code (imports, four-plus test functions with assertions, exception handling) that would run as-is against a matching parse_row implementation, so neither is more \"complete/runnable\" than the other.",
+            "r5: Both are internally consistent, fully written pytest files with explicit imports and assertions that would run once the stated (and flagged) assumptions about parse_row's signature are met; Y has one extra test case but that's coverage breadth, not a completeness/runnability distinction."
+          ]
+        },
+        {
+          "summary": "Task 2: We fixed a bug where load_config returned None instead of raising KeyError for missing keys. Add a regression … — rep-by-rep record (3 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): WITH the text 9%–99%, WITHOUT it 9%–99%.",
+            "r1: X commits to one self-consistent test exercising load_config directly (raises KeyError from the call itself), while Y's primary test only asserts that dict subscription raises KeyError (not load_config itself) and then hedges by offering a second alternate test with \"pick whichever shape matches\" — leaving no single decisive runnable test.",
+            "r2: Both are equally unverified/unrunnable against the real repo (neither read source), but Y's test is more complete for the requested behavior: it exercises load_config with an actual constructed config source (tmp_path fixture with existing_key present) so the missing-key path is a genuine regression check, whereas X calls load_config with only a single string arg and no config source at all, leaving the test structurally incomplete relative to how a config loader realistically works.",
+            "r5: Both give a single self-contained pytest function with tmp_path setup, import, and pytest.raises(KeyError) assertion that would run as-is under an assumed load_config signature; X's version is marginally cleaner (no stray internal-process comment leaking into the test body) but that doesn't affect runnability/completeness."
+          ]
+        },
+        {
+          "summary": "Task 3: Create a test module for the retry decorator in utils/retry.py (it retries a function up to 3 times on excepti… — rep-by-rep record (5 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): WITH the text 48%–100%, WITHOUT it 48%–100%.",
+            "r1: Both X and Y provide a full, syntactically valid pytest test file (imports, decorated functions, assertions) with a clear path and no missing pieces — X additionally covers a non-swallowed-exception-type case, but both are equally complete and runnable as requested.",
+            "r2: Both X and Y are complete, self-contained pytest files with valid imports and four runnable test functions exercising first-success, retry-then-success, exhaustion, and argument-passing cases; Y's argument test is weaker (doesn't exercise retry) but is still a complete runnable test.",
+            "r3: Both X and Y present a single complete, syntactically valid file at a stated path with multiple self-contained test functions (success, retry-then-succeed, exhaustion-raises) that would run under pytest given their stated assumptions about retry.py's signature; neither has missing imports or truncated code.",
+            "r4: Both X and Y provide a full file path, complete importable/runnable pytest-style code covering first-success, eventual-success-within-limit, and exhaustion-raises cases, with explicit run commands and clearly flagged assumptions about the decorator's signature — neither is more \"complete and runnable\" than the other on the stated criterion (Y adds extra tests, which is a thoroughness difference, not a completeness/runnability one).",
+            "r5: Both X and Y present a full, syntactically complete file with path, imports, and four/five self-contained test functions exercising success, retry-then-succeed, exhaustion, and arg-passthrough — either is directly runnable via pytest against a retry(fn) decorator as described."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Could this test have seen a difference at all? — \"- The project mascot is a blue heron named Stilts.\"",
+      "intro": "If the text really did help, would this run have noticed? Each row imagines a different size of \"really better\" — from changing the result in 20% of tries to 80% — and shows the chance this test would have caught it.{{^1}} This run produced 2 {{forced pick}}s — fewer than the 5 needed to reach {{the bar}}, so no result could have cleared it regardless of effect size; expected when a text changes nothing.",
+      "howToRead": [
+        "How it was figured: detection chance = the chance that at least 5 of the 11 {{usable repeat}}s become {{clear win}}s for the WITH side, when each repeat converts with the row's probability.{{^1}}",
+        "Watch out: always figured at fixed hypothetical strengths, never from the observed result — quoting how good a run was at catching the very effect it happened to see would be circular (statisticians call that \"observed power\")."
+      ],
+      "chart": {
+        "label": "Chance this design catches an effect, by hypothetical effect strength",
+        "yUnit": "%",
+        "yMax": 100,
+        "groups": [
+          {
+            "label": "20% converted",
+            "values": [
+              5
+            ],
+            "short": [
+              "5%"
+            ],
+            "notes": [
+              "If 20% of repeats became clear wins for the WITH side, this design would catch it 5% of the time (best case)"
+            ]
+          },
+          {
+            "label": "40% converted",
+            "values": [
+              46.7
+            ],
+            "short": [
+              "46.7%"
+            ],
+            "notes": [
+              "If 40% of repeats became clear wins for the WITH side, this design would catch it 46.7% of the time (best case)"
+            ]
+          },
+          {
+            "label": "60% converted",
+            "values": [
+              90.1
+            ],
+            "short": [
+              "90.1%"
+            ],
+            "notes": [
+              "If 60% of repeats became clear wins for the WITH side, this design would catch it 90.1% of the time (best case)"
+            ]
+          },
+          {
+            "label": "80% converted",
+            "values": [
+              99.8
+            ],
+            "short": [
+              "99.8%"
+            ],
+            "notes": [
+              "If 80% of repeats became clear wins for the WITH side, this design would catch it 99.8% of the time (best case)"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "If this share of repeats really became clear wins for the WITH side",
+          "Chance this design would have caught it (best case)"
+        ],
+        "rows": [
+          [
+            "20%",
+            "5%"
+          ],
+          [
+            "40%",
+            "46.7%"
+          ],
+          [
+            "60%",
+            "90.1%"
+          ],
+          [
+            "80%",
+            "99.8%"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "Was the data any good?",
+      "intro": "How much of the planned data survived to be scored.",
+      "howToRead": [
+        "Three ways to lose a repeat: the {{worker}} produces no usable output, a {{grader}} call fails outright, or the two blind judgings disagree once the labels are swapped.",
+        "Why it matters: lost repeats are thrown out, never scored — high loss makes the run less able to see anything (wide ranges, weak fluke-chances above).",
+        "\"Not separated in this run\": older runs counted grader failures under worker failures."
+      ],
+      "table": {
+        "columns": [
+          "Text under test",
+          "Planned pairs",
+          "Worker failures",
+          "Grader failures",
+          "Judges flipped when labels swapped",
+          "Share of planned data that survived"
+        ],
+        "rows": [
+          [
+            "\"- All test files use the suffix _spec.py, never the test_ pr\"",
+            15,
+            "0 (0%)",
+            "not separated in this run (counted under worker failures)",
+            "0 (0% of graded)",
+            "15 of 15 (100%)"
+          ],
+          [
+            "\"- The project mascot is a blue heron named Stilts.\"",
+            15,
+            "0 (0%)",
+            "not separated in this run (counted under worker failures)",
+            "4 (26.7% of graded)",
+            "11 of 15 (73.3%)"
+          ]
+        ]
+      }
+    }
+  ],
+  "provenance": [
+    {
+      "label": "raw run data: calibration-positive-attempt3-2026-08-07.json",
+      "href": "calibration-positive-attempt3-2026-08-07.json"
+    },
+    {
+      "label": "raw run data: calibration-placebo-attempt2-2026-08-07.json",
+      "href": "calibration-placebo-attempt2-2026-08-07.json"
+    },
+    {
+      "label": "validation history: VALIDATION.md",
+      "href": "../VALIDATION.md"
+    },
+    {
+      "label": "the test program that produced this data: tier3-arms.workflow.js",
+      "href": "../scripts/tier3-arms.workflow.js"
+    }
+  ],
+  "notes": []
+}

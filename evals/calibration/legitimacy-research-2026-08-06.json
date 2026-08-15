@@ -1,0 +1,629 @@
+{
+  "summary": "Source-grounded research validation of the ablation skill: method provenance, experimental design, LLM-judge validity, drift evidence, prior art, adversarial critique",
+  "agentCount": 6,
+  "logs": [
+    "Sweep complete: 5/5 pillars returned"
+  ],
+  "result": {
+    "findings": [
+      {
+        "pillar": "Ablation studies in machine learning — definition fidelity, rigor-norm status, published critiques, and prompt/steering-component precedent",
+        "verdict": "MIXED",
+        "findings": [
+          {
+            "claim": "Canonical ML definition of 'ablation study' matches the skill's remove-component/compare/observe-delta method",
+            "support": "supports",
+            "source": "https://en.wikipedia.org/wiki/Ablation_(artificial_intelligence)",
+            "quote": "An ablation study aims to determine the contribution of a component to an AI system by removing the component, and then analyzing the resultant performance of the system.",
+            "note": "Matches the skill's tier-3 design: derive an ablated arm by removing exactly one component, run matched tasks, observe the behavioral delta. The skill's control/ablated split, single-variable-at-a-time rule, and 'observe, don't assume' framing are structurally faithful to this definition."
+          },
+          {
+            "claim": "Ablation is a neuroscience-derived methodology adapted to artificial neural networks, establishing the removal-and-observe lineage",
+            "support": "prior-art",
+            "source": "https://arxiv.org/abs/1901.08644",
+            "quote": "Ablation studies have been widely used in the field of neuroscience to tackle complex biological systems such as the extensively studied Drosophila central nervous system.",
+            "note": "Meyes et al. 2019, a foundational ANN-ablation paper, confirms the term's biological origin (surgical removal of tissue to study function) and its adaptation to selectively removing/damaging network components to observe effects — the same removal-and-observe logic the skill applies to prose."
+          },
+          {
+            "claim": "Ablation vocabulary has already been generalized beyond model weights to model/system 'components' generally, including prompt engineering",
+            "support": "supports",
+            "source": "https://learnprompting.org/vocabulary/ablation",
+            "quote": "Ablation refers to the systematic removal or alteration of components in a model or system to evaluate their contribution to the model's overall performance.",
+            "note": "A prompt-engineering reference glossary defines ablation generically over 'features, layers, or techniques' — directly supporting the skill's extension of ablation to steering prose (CLAUDE.md lines, rule files) as a component type."
+          },
+          {
+            "claim": "Ablation experiments are treated as the standard mechanism for isolating what drives empirical results in AI research (informal norm)",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2507.08038",
+            "quote": "A key mechanism to obtain such insights is through ablation experiments.",
+            "note": "AblationBench (2025) treats ablation planning as a nontrivial research skill worth benchmarking — frontier LLM agents only reproduce a minority of author-designed ablations, below human level, per the fetched summary — indicating ablation is a real, expected competency in ML research practice, not a formality."
+          },
+          {
+            "claim": "Ablation studies are a formally codified reviewer-checklist requirement at major ML/NLP venues",
+            "support": "contradicts",
+            "source": "https://neurips.cc/public/guides/PaperChecklist",
+            "quote": "no mention of \"ablation\" appears anywhere in the text",
+            "note": "Direct fetch-and-search of the official NeurIPS Paper Checklist Guidelines found zero occurrences of the word 'ablation.' Same result independently for the ACL/ARR Responsible NLP Research Checklist (arxiv.org/html/2402.13374v1) and NeurIPS 2025 Reviewer Guidelines. Ablation is a strong de facto community norm, not a named formal checklist item, at the three venue-guideline documents checked directly this session."
+          },
+          {
+            "claim": "Published critique: absent or sloppy ablation lets authors misattribute empirical gains to the wrong change",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/1807.03341",
+            "quote": "failure to identify the sources of empirical gains, e.g., emphasizing unnecessary modifications to neural architectures when gains actually stem from hyper-parameter tuning",
+            "note": "Lipton & Steinhardt, 'Troubling Trends in Machine Learning Scholarship.' The skill's hard rule 'One component per tier-3 test; ablating clusters confounds attribution' is a direct structural countermeasure to exactly this failure mode."
+          },
+          {
+            "claim": "Published critique: what makes an ablation informative vs. misleading turns on baseline/perturbation choice, which is often under-scrutinized",
+            "support": "bounds",
+            "source": "https://arxiv.org/abs/2207.05566",
+            "quote": "how to identify useful baselines for XAI methods and viable perturbations for ablation studies",
+            "note": "BASED-XAI's critique: perturbation/baseline choice can flip ablation conclusions, and this choice is rarely rigorously validated ('varying perturbations and adding simple guardrails can help to avoid potentially flawed conclusions'). The skill's design partly sidesteps this — removal is exact verbatim string deletion, not a family of substitutable perturbations — but it introduces an analogous unscrutinized choice point of its own: the LLM grader and its blind verdict are the measurement instrument, and the skill's design does not address grader reliability/inter-rater agreement, only label-swap blinding. That gap is unresolved by anything found this session (see gaps)."
+          },
+          {
+            "claim": "Prompt/steering-component ablation (removing a component of a prompt, not a model, and comparing outputs) is an established usage in current LLM-agent research",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2507.02938",
+            "quote": "Ablation studies highlight the complete example and function usage examples as the primary contributors to the agent's enhanced performance.",
+            "note": "A 2025 LLM-agent paper runs exactly the pattern the skill formalizes: remove one structured-prompt component at a time (chain-of-thought, worked example, function-usage example, constraints) and measure the behavioral/reliability delta. Confirms 'prompt ablation' is real, current published practice, not a novel or strained extension of the term."
+          },
+          {
+            "claim": "The skill's own cited vendor source ('the delete-test in Claude Code best practices') is accurately quoted",
+            "support": "supports",
+            "source": "https://code.claude.com/docs/en/best-practices",
+            "quote": "Keep it concise. For each line, ask: \"Would removing this cause Claude to make mistakes?\" If not, cut it.",
+            "note": "This is Anthropic's own official Claude Code documentation. The quote matches SKILL.md's paraphrase of it verbatim in spirit and closely in wording. This is a primary source, unlike the interview citation directly below."
+          },
+          {
+            "claim": "Ablation of steering prose specifically (CLAUDE.md/system-prompt content, not benchmark prompts) is emerging industry practice at Anthropic, per secondary reporting",
+            "support": "supports",
+            "source": "https://finance.biggo.com/news/7df48019614f68c0",
+            "quote": "Delete the entire system prompt. Use the product to see where the model stumbles. Add instructions back — one line at a time — only when the model repeatedly fails on the same specific issue.",
+            "note": "Also: 'delete your .claude.md files, skills, and hooks every six months, and observe what the model can do with less guidance before adding instructions back.' This is a secondary journalism source (BigGo Finance / Medium coverage of a Boris Cherny interview), NOT the primary interview transcript — matching SKILL.md's own hedge that this citation is an 'unverified transcript' pending location of the original. I could not locate or fetch the primary interview this session, so the underlying claim remains corroborated only at one remove."
+          }
+        ],
+        "gaps": "1) Formal-checklist claim: checked three primary venue documents directly (NeurIPS 2025 Reviewer Guidelines, official NeurIPS Paper Checklist Guidelines, ACL/ARR Responsible NLP Research Checklist) and none name 'ablation' as a required item — so ablation is best characterized as a strong informal/community norm, not a codified requirement; I did not check ICLR, CVPR, or ACL's own (non-ARR) guidelines, so this is not exhaustive across venues. 2) Multiple arXiv PDF fetches failed to extract readable text this session (Troubling Trends full PDF, BASED-XAI full PDF, AblationBench full PDF, a NeurIPS 2019 author-feedback PDF, the ACL checklist PDF) — findings from those papers are limited to what the arXiv abstract (HTML) pages yielded, not full methodology/results sections. 3) Additional prompt-ablation examples (Open-TI, PE2 meta-prompt ablation, SAP-Bench system-prompt removal, AOT* RAG-component ablation) surfaced only via WebSearch result summaries, not independently fetched and quoted verbatim this session — treat as corroborating pattern evidence, weaker than the one arXiv abstract I did fetch and quote directly (2507.02938). 4) The primary source for the Boris Cherny 'ablation' interview/transcript was not located or fetched — only secondary journalism was verified, leaving the skill's own citation exactly as unresolved as it already flags itself. 5) I did not research LLM-as-judge / grader-reliability critique literature against the tier3 template's single blind-grader design — a plausible informativeness gap (per the BASED-XAI baseline-choice critique's logic, extended to the grading step) that the skill's design does not visibly address beyond label-swap blinding and a >=3-rep floor. 6) Found no paper studying ablation of free-form multi-line prose/steering documents (CLAUDE.md-style) as opposed to structured prompt-template fields; the fit to arbitrary prose-rule removal is a reasonable extrapolation from the evidence found, not something directly evidenced by a paper doing exactly that."
+      },
+      {
+        "pillar": "Experimental-design standards",
+        "verdict": "MIXED",
+        "gaps": "No source verified/found specifically for: (a) 'counterbalancing' as a named methodological concept applied to deterministic (non-random) label-swap schemes like this template's (p+r)%2 swap; (b) any standard from LLM/agent-evaluation methodology (all fetched sources are clinical-trial, psychology, or regression-statistics literature — applicability to matched-pair agent behavioral probes is an analogy, not a verified equivalence); (c) an explicit numeric false-positive-rate calculation for a binomial-majority-threshold-across-multiple-probes design specifically (the multiple-comparisons citation is qualitative/analogous, not a direct proof for this design). One fetch (PMC4876428, decision-theoretic pilot trial review) was checked for inconclusive-outcome and fixed-threshold claims and explicitly did NOT contain supporting text — noted as a negative result, not asserted. One WebSearch-synthesized claim (that n=3 estimates 'reversed sign' when scaled to n=20/40, attributed to a 'Challenging the N-Heuristic' paper) was checked by fetching the source directly and found NOT present in that paper's text — dropped rather than reported, per the verbatim-only rule. All WebFetch quotes above passed through the tool's own summarization step rather than being read as raw HTML by me directly; treated as best-effort but not immune to the same paraphrase risk just demonstrated.",
+        "findings": [
+          {
+            "claim": "Pre-registered criterion (criterion + probes fixed and human-approved before any agent runs)",
+            "support": "supports",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5856500/",
+            "quote": "Preregistration of an analysis plan is committing to analytic steps without advance knowledge of the research outcomes.",
+            "note": "Nosek et al., PNAS 2018. Template's frame-then-gate structure (criterion/probes/reps fixed before 'Arms' phase runs, script throws before any agent spawns on a malformed frame) mirrors 'the analytic pipeline is specified before observing the data' and the paper's warning against 'the garden of forking paths.'"
+          },
+          {
+            "claim": "Blinded grading (deterministic X/Y label swap by (p+r) parity; grader never told which output is control vs ablated)",
+            "support": "supports",
+            "source": "https://journals.plos.org/plosmedicine/article?id=10.1371%2Fjournal.pmed.0040061",
+            "quote": "Blinding of outcome assessors minimizes the risk of detection bias (i.e., observer, ascertainment, assessment bias).",
+            "note": "Matches the accepted rationale for outcome-assessor blinding. Bound: the swap is a fixed deterministic function of (p,r), not a randomized allocation — canonical RCT blinding literature (this same source) discusses randomized arm assignment, not parity-keyed swapping. Functionally it still prevents the grader from learning arm identity, which is the property blinding literature cares about, but it is a systematic scheme rather than a randomized one — no source fetched this session validates deterministic-parity swapping specifically as equivalent to randomized blinding."
+          },
+          {
+            "claim": "Control vs treatment 'arms' (steeringWith vs steeringWithout, same probes)",
+            "support": "bounds",
+            "source": "https://journals.plos.org/plosmedicine/article?id=10.1371%2Fjournal.pmed.0040061",
+            "quote": "Blinding of participants and health care providers prevents performance bias that occurs if additional therapeutic interventions (i.e., cointerventions) are provided preferentially in one of the comparison groups.",
+            "note": "The template's two 'arms' are matched-probe parallel conditions, which is the right shape, but there is no random allocation mechanism — clinical-trial-derived 'arm' vocabulary standardly presumes randomized allocation to control selection bias; here every rep gets both conditions by design, which is closer to a matched-pairs comparison than a randomized parallel-groups trial. Not necessarily a flaw (no human subjects to allocate with selection bias), but the terminology imports a stronger methodological guarantee than the design actually provides."
+          },
+          {
+            "claim": "reps>=3 enforced as the floor ('single runs measure noise')",
+            "support": "contradicts",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10662929/",
+            "quote": "the information collected may not be sufficient to estimate the required parameters for future definitive randomised controlled trials",
+            "note": "Fetched review of UK pilot/feasibility studies cites Julious (2005) at 12 participants per arm as a common rule of thumb and other guidance ranging 10-75 per arm; none of the reviewed recommendations endorse n=3. Separately, https://pmc.ncbi.nlm.nih.gov/articles/PMC7034864/ (minimum-N for regression inference) states verbatim: 'We interpreted these results to indicate that N ≤ 7 should not be used to compare quadratic to straight-line and null models, even if patterns are tight around lines' and reports false positives/negatives below N=8. These are continuous/regression contexts, not the template's binomial pass/fail probes, so the numbers don't transfer directly, but every fetched source that discusses minimum-N floors sets it well above 3."
+          },
+          {
+            "claim": "n=3 is enough to support a LOAD-BEARING/CEREMONY/HARMFUL verdict",
+            "support": "bounds",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7034864/",
+            "quote": "With very low variance, both false positives and false negatives occurred at N < 8, but data shape was always clearly identified at N ≥ 8.",
+            "note": "The skill's own template text ('single runs measure noise') already concedes n=1 is too weak; this source indicates n=3 is still inside the zone flagged as unreliable, though it is about continuous regression shape-fitting, not binomial agent-behavior pass/fail — direct applicability to this domain is an inference, not a verified equivalence."
+          },
+          {
+            "claim": "Verdict fires LOAD-BEARING if ANY of the 3-6 probes shows the 2/3 delta (anyDegraded && !anyHarmful, no correction across probes)",
+            "support": "contradicts",
+            "source": "https://en.wikipedia.org/wiki/Multiple_comparisons_problem",
+            "quote": "Each test has its own chance of a Type I error (false positive), so the overall probability of making at least one false positive increases as the number of tests grows.",
+            "note": "Wikipedia is tertiary, but the fact cited is uncontested statistical bookkeeping, illustrated with a worked example ('if 100 tests are each conducted at the 5% level and all corresponding null hypotheses are true, the expected number of incorrect rejections is 5'). The template runs an independent per-probe threshold test across 3-6 probes, then takes 'any probe hits' as the whole-component verdict, with no Bonferroni/FDR-style correction across probes — structurally the same 'test many, flag any' pattern the multiple-comparisons literature says inflates the false-positive rate. Caveat: the classic p-value inflation formula does not directly apply, since the template's per-probe rule is a binomial-majority threshold, not a p-value against a shared null — the mechanism (more independent looks → higher chance one look crosses the line by chance alone) is the same logic, but I could not verify a source that quantifies the false-positive rate for this specific binomial-threshold-across-probes design."
+          },
+          {
+            "claim": "Fixed mechanical 2/3-threshold decision rule without significance testing is defensible for a small-n SCREENING decision",
+            "support": "supports",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3882502/",
+            "quote": "small screening trials are generally the most efficient",
+            "note": "Screening trials in the fetched drug-development-planning paper exist to 'gain information about a treatment' and 'decide whether further investigation is warranted' on smaller samples than confirmatory trials, which must 'prove to an independent observer that the treatment should be licensed' — maps onto the ablation skill's own stated recommended action for LOAD-BEARING ('keep — and consider promoting to enforcement'), i.e. tier 3 feeds a further decision rather than issuing a final claim."
+          },
+          {
+            "claim": "UNRESOLVED as a legitimate allowed outcome (not just keep/delete)",
+            "support": "supports",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11446087/",
+            "quote": "Allowing for an intermediate result between stop and go may reduce the probability of incorrect decisions",
+            "note": "Three-outcome (stop/adjust/go) pilot-trial design literature treats an inconclusive middle category as a designed feature at small n, not a design failure, specifically because sampling variability at low n makes forced binary calls error-prone — directly supports the template's UNRESOLVED branch and its instruction to 'refine probes or raise reps and re-run' rather than force a verdict."
+          },
+          {
+            "claim": "Screening designs can use fixed thresholds with no formal significance test",
+            "support": "contradicts",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11446087/",
+            "quote": "Whenever a pilot trial progression criteria is specified in the form of Eq. [1], it is mathematically equivalent to a hypothesis test.",
+            "note": "Qualifier on the two prior 'supports' findings: the methods literature's screening/pilot progression thresholds are not exempt from statistical accounting — they are derived from specified null/alternative parameter values and controlled error rates ('choose values of n and x which minimise n whilst satisfying' those constraints). The ablation template's ceil(2n/3) threshold and floor(n/3) no-delta band are fixed constants applied regardless of n (3 through 6 reps), with no shown derivation from a target error rate — so the screening/confirmatory distinction itself is well supported, but the claim that an undocumented fixed threshold is methodologically equivalent to a proper screening design is not: a proper screening design computes the threshold from a target false-positive/negative rate, which this template does not show doing."
+          },
+          {
+            "claim": "PLOS Biology exploratory/confirmatory distinction generally frames the tier-3 template as exploratory/screening-appropriate",
+            "support": "prior-art",
+            "source": "https://journals.plos.org/plosbiology/article?id=10.1371%2Fjournal.pbio.1001863",
+            "quote": "smaller sample sizes and less fastidious designs",
+            "note": "Exploratory research 'employs economy of resources' with 'smaller sample sizes and less fastidious designs' to narrow candidate fields, versus confirmatory research which must 'resemble adequately powered clinical trials' with 'rigid and pre-specified designs' and 'bet the house' on single efficacy studies. The tier-3 template's own stated purpose (audit steering for bloat, decide keep/delete/promote) is structurally exploratory/screening, not a confirmatory claim of population-level truth — this framing is the strongest defense available for the small-n design, but it is a framing the skill itself never states explicitly."
+          }
+        ]
+      },
+      {
+        "pillar": "LLM-as-judge validity",
+        "verdict": "MIXED",
+        "findings": [
+          {
+            "claim": "Position, verbosity, and self-enhancement bias are established, distinct failure modes in pairwise LLM judging (foundational source for the whole practice)",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2306.05685",
+            "quote": "We examine the usage and limitations of LLM-as-a-judge, including position, verbosity, and self-enhancement biases, as well as limited reasoning ability, and propose solutions to mitigate some of them."
+          },
+          {
+            "claim": "Accepted mitigation for position bias is calling the judge TWICE per pair (both orders) and only counting a win if the verdict is consistent in both orders — not a single query with the label assignment alternated across different reps",
+            "support": "bounds",
+            "source": "https://ai-tldr.dev/learn/evaluation-safety/llm-as-judge/llm-judge-biases/",
+            "quote": "The position bias can be addressed by simple solutions. A conservative approach is to call a judge twice by swapping the order of two answers and only declare a win when an answer is preferred in both orders."
+          },
+          {
+            "claim": "The same double-query-and-check-agreement method is described as the field's adopted practice, confirming the template's single-query deterministic-alternation is a different (weaker) instantiation",
+            "support": "bounds",
+            "source": "https://ar5iv.labs.arxiv.org/html/2411.16594",
+            "quote": "invoking the judge LLM twice, swapping the order of the two candidates in each instance"
+          },
+          {
+            "claim": "Position bias is severe and model-dependent when unmitigated: Claude-v1 was consistent in only 23.8% of pairs, GPT-3.5 46.2%, GPT-4 65.0% — so alternation matters, but even GPT-4's own consistency rate under the double-query test caps well short of 100%",
+            "support": "supports",
+            "source": "https://ai-tldr.dev/learn/evaluation-safety/llm-as-judge/llm-judge-biases/",
+            "quote": "Most LLM judges favor the first position. Only GPT-4 outputs consistent results in more than 60% of cases."
+          },
+          {
+            "claim": "Verbosity bias is a separate axis from position bias and is not addressed by position swapping/alternation: a repetitive-list attack that padded answers with redundant content fooled Claude-v1 and GPT-3.5 over 90% of the time",
+            "support": "bounds",
+            "source": "https://ai-tldr.dev/learn/evaluation-safety/llm-as-judge/llm-judge-biases/",
+            "quote": "all LLMs may be prone to verbosity bias though GPT-4 defends significantly better than others"
+          },
+          {
+            "claim": "Self-enhancement bias: judges measurably favor outputs generated by their own model, though the original MT-Bench study flagged its own numbers as inconclusive given limited data",
+            "support": "bounds",
+            "source": "https://ai-tldr.dev/learn/evaluation-safety/llm-as-judge/llm-judge-biases/",
+            "quote": "GPT-4 favors itself with a 10% higher win rate; Claude-v1 favors itself with a 25% higher win rate. ... Due to limited data and small differences, our study cannot determine whether the models exhibit a self-enhancement bias."
+          },
+          {
+            "claim": "A 2026 follow-up study formalizes this as Self-Preference Bias (SPB) — a directional deviation where a model favors its own generated outputs during evaluation — and finds it is real, varies widely by model, and is uncorrelated (sometimes negatively) with judge capability",
+            "support": "supports",
+            "source": "https://arxiv.org/html/2604.22891v2",
+            "quote": "Self-Preference Bias (SPB), which is a directional evaluative deviation in which LLMs systematically favor or disfavor their own generated outputs during evaluation."
+          },
+          {
+            "claim": "That same SPB study frames the bias specifically as the judge favoring content it itself generated, not content generic to 'its family' regardless of counterparty — my fetch could not find a passage addressing the case where BOTH compared outputs come from the same model family as the judge (the tier3-arms default configuration); its methodology treats double-query order-swap as baseline measurement, not as an isolating mitigation",
+            "support": "bounds",
+            "source": "https://arxiv.org/html/2604.22891v2",
+            "quote": "The framework employed \"double query\" protocols, presenting pairs in both orders. However, the paper doesn't isolate position swapping as a standalone mitigation—it's part of the baseline measurement methodology."
+          },
+          {
+            "claim": "A broader survey defines the same phenomenon as 'egocentric bias' — favoring outputs generated by the same model — as a bias that persists independently of position-bias mitigation",
+            "support": "bounds",
+            "source": "https://ar5iv.labs.arxiv.org/html/2411.16594",
+            "quote": "Egocentric Bias arises when LLMs favor outputs generated by the same model, compromising objectivity. ... particularly when evaluation metrics are designed using the same model, leading to inflated scores."
+          },
+          {
+            "claim": "Vendor (Anthropic) guidance recommends exactly the design choice of judging one isolated criterion at a time rather than overall/holistic quality — directly matches the template's single pre-registered criterion",
+            "support": "supports",
+            "source": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+            "quote": "It can also help to create clear, structured rubrics to grade each dimension of a task, and then grade each dimension with an isolated LLM-as-judge rather than using one to grade all dimensions."
+          },
+          {
+            "claim": "Anthropic also stresses that model-graded judges need human-calibration validation before being trusted — a step the template's automated pipeline does not include (no calibration-against-human step is described in SKILL.md or the script)",
+            "support": "bounds",
+            "source": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+            "quote": "Model grading often takes careful iteration to validate accuracy. LLM-as-judge graders should be closely calibrated with human experts to gain confidence that there is little divergence between the human grading and model grading."
+          },
+          {
+            "claim": "Vendor (OpenAI) guidance recommends pairwise/pass-fail verdict structures over free-form scoring for reliability — matches the template's enum verdict (X/Y/both/neither) rather than a numeric score",
+            "support": "supports",
+            "source": "https://developers.openai.com/api/docs/guides/evaluation-best-practices",
+            "quote": "pairwise comparison or pass/fail for more reliability"
+          },
+          {
+            "claim": "OpenAI guidance separately names position bias and verbosity bias as the two concerns to control for in pairwise judging, and recommends actively controlling response length — the template controls for position (alternation) but has no length-control or verbosity-neutralization step",
+            "support": "bounds",
+            "source": "https://developers.openai.com/api/docs/guides/evaluation-best-practices",
+            "quote": "Position bias (response order), verbosity bias (preferring longer responses). ... Control for response lengths as LLMs bias towards longer responses in general"
+          },
+          {
+            "claim": "A separate, more recent line of work on rubric-based judging (a different construct — position of score anchors within a rubric list, not identity of paired candidates) found that swap/balance-based debiasing techniques often do not meaningfully outperform random ordering, and that detecting a bias is not the same as correcting the resulting score",
+            "support": "bounds",
+            "source": "https://arxiv.org/html/2602.02219v2",
+            "quote": "Balanced ≈ Random: the paired CI for r_Balanced − r_Random contains 0 on 11 of 12 cells...exact score–position balance buys essentially nothing over random ordering. ... Detecting a bias is not the same as fixing the score."
+          },
+          {
+            "claim": "That same rubric-position-bias study reports mitigation is at best partial even after full balancing: the top-ranked candidate still flips for a substantial share of prompts",
+            "support": "bounds",
+            "source": "https://arxiv.org/html/2602.02219v2",
+            "quote": "Top-1 candidate flips on 16% to 39% of prompts"
+          }
+        ],
+        "gaps": "Could not obtain readable full-text of the original MT-Bench PDF (arxiv.org/pdf/2306.05685) or the LLM-as-judge survey PDF (arxiv.org/pdf/2411.16594) directly — both returned binary/undecoded content via WebFetch; findings from these sources were instead corroborated through an ar5iv HTML mirror and a secondary summary page (ai-tldr.dev), which is commentary, not primary text — flagged as such rather than treated as an original-source quote. Could not verify from any fetched source what specifically happens to self-preference/egocentric bias in the exact configuration tier3-arms.workflow.js uses by default: grader model AND both compared outputs (ctrl and abl) drawn from the same model family (e.g., all 'sonnet'), where there is no cross-family 'other' output to disfavor. All fetched self-preference/egocentric-bias literature discusses the bias in a same-model-vs-different-model comparison context; none directly addresses whether the bias has any differential (X-vs-Y) effect when both arms share the judge's model family — this is the load-bearing question for pillar item (4) and remains unresolved by literature found this session, not just by inference. Could not verify OpenAI's own primary cookbook/docs page on rubric-judge pass/fail construction (only a secondary aggregator page was reached with usable content); the developers.openai.com evaluation-best-practices page was fetched directly and is treated as primary/official. Did not find literature specifically validating or invalidating deterministic label alternation BY PARITY ACROSS DIFFERENT SAMPLES (the template's actual mechanism) as an adequate substitute for the double-query-per-pair method the literature describes — this is a reasoned gap, not a sourced claim. Separately (from reading the script itself, not the literature): with the enforced minimum reps=3, parity-based alternation does not evenly split X/Y across a single probe's reps (e.g., 3 reps gives a 2/1 split), so position exposure is imperfectly balanced at the minimum configuration — a mechanical observation, not a literature finding, included here only as context for interpreting the sourced position-bias findings above."
+      },
+      {
+        "pillar": "Prompt sensitivity and model-version drift",
+        "verdict": "SUPPORTED",
+        "findings": [
+          {
+            "claim": "Same prompt/task behaves differently across versions of the same model product over time",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2307.09009",
+            "quote": "GPT-3.5 and GPT-4 are the two most widely used large language model (LLM) services. However, when and how these models are updated over time is opaque."
+          },
+          {
+            "claim": "Magnitude of drift on identical tasks across dated versions of the same product is large, not marginal",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2307.09009",
+            "quote": "GPT-4 March 2023: 84% accuracy; GPT-4 June 2023: 51% accuracy (prime number identification task, per WebFetch extraction of the paper's reported results)"
+          },
+          {
+            "claim": "Instruction-following itself drifts across versions, not just topical accuracy — directly relevant to steering lines whose whole job is to be followed",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2307.09009",
+            "quote": "GPT-4's capacity to follow user directives decreased over time (per WebFetch extraction of the paper's findings)"
+          },
+          {
+            "claim": "Small, meaning-preserving prompt perturbations (formatting, delimiters) cause large swings in output/eval outcome — bears on whether a small steering component's effect is even measurable/attributable",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2510.05152",
+            "quote": "performance on MMLU for example can vary by ±23% depending on the choice of delimiter"
+          },
+          {
+            "claim": "Prompt-format sensitivity can be strong enough to flip which model appears best, i.e. small textual changes can dominate a comparison",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2510.05152",
+            "quote": "manipulate model rankings to put any model in the lead by only modifying the single character separating examples"
+          },
+          {
+            "claim": "Vendor (Anthropic) explicitly advises re-testing/re-tuning prompts when the underlying model version changes",
+            "support": "supports",
+            "source": "https://platform.claude.com/docs/en/docs/about-claude/models/migrating-to-claude-4",
+            "quote": "Claude Opus 4.7 interprets prompts more literally and explicitly than Claude Opus 4.6, particularly at lower effort levels... A prompt and harness review may be especially helpful for migration to Claude Opus 5."
+          },
+          {
+            "claim": "Vendor documentation directly instructs removing steering lines that were load-bearing on an old model but become unneeded/harmful ceremony on a new one — near-verbatim match to the skill's core thesis",
+            "support": "supports",
+            "source": "https://platform.claude.com/docs/en/docs/about-claude/models/migrating-to-claude-4",
+            "quote": "Remove carried-over verification instructions and constrain scope: Claude Opus 5 verifies its own work without being told to, so remove explicit verification or self-check instructions carried over from prompts tuned for earlier models; leaving them in causes over-verification."
+          },
+          {
+            "claim": "Vendor documentation frames this as a checklist item across model generations, i.e. a recurring/cadence concern, not a one-off",
+            "support": "supports",
+            "source": "https://platform.claude.com/docs/en/docs/about-claude/models/migrating-to-claude-4",
+            "quote": "Review prompts for the behavior changes (response length, literalism, tone, progress updates, subagents, effort calibration, tool triggering, cyber safeguards, high-resolution image handling)."
+          },
+          {
+            "claim": "Long-context degradation (relevant to steering accretion / context bloat) is a documented failure mode: models don't use context uniformly",
+            "support": "supports",
+            "source": "https://arxiv.org/abs/2307.03172",
+            "quote": "We find that performance can degrade significantly when changing the position of relevant information, indicating that current language models do not robustly make use of information in long input contexts."
+          },
+          {
+            "claim": "Context/instruction bloat as a failure mode is an active, separately-named research area beyond the 2023 paper, i.e. not a one-off finding",
+            "support": "supports",
+            "source": "https://www.trychroma.com/research/context-rot",
+            "quote": "models do not use their context uniformly; instead, their performance grows increasingly unreliable as input length grows"
+          },
+          {
+            "claim": "Prompt sensitivity research extends to domain-specific classification tasks, indicating the phenomenon is not confined to toy benchmarks",
+            "support": "bounds",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12343119/",
+            "quote": "Evaluating prompt and data perturbation sensitivity in large language models for radiology reports classification (title only — page not fetched this session, listed as a lead not a verified finding)"
+          }
+        ],
+        "gaps": "Did not fetch the full PDF text of \"A Single Character can Make or Break Your LLM Evals\" (arXiv:2510.05152) — WebFetch could not parse the raw PDF stream on first attempt; the quoted figures (±23% MMLU variance, ranking manipulation) came from a WebFetch summarization of the arxiv.org/abs page rather than the PDF body, so treat as summary-extracted, not hand-verified against tables/figures. Similarly, the GPT-4 84%→51% figure and the \"instruction-following decreased\" claim from arXiv:2307.09009 came through WebFetch's summarization of the abs page, not the paper's own tables — high confidence given multiple independent search snippets corroborate the same numbers, but not a raw-text verification. Did not find OpenAI vendor documentation specifically instructing prompt re-testing on model upgrade (only fetched and verified Anthropic's own migration doc); the skill cites only \"vendor guidance\" generically and this session can only confirm it for Anthropic, not for OpenAI or other vendors. Did not locate any study that ablates a single small steering line (a CLAUDE.md rule, a skill instruction) and measures its isolated effect size the way the ablation skill's tier-3 methodology proposes — the fetched evidence supports the surrounding phenomena (cross-version drift is real and sometimes large, small prompt perturbations matter, a vendor explicitly tells users to strip out prior-model verification instructions on upgrade, and long-context/instruction accretion degrades performance) but the line-level ablation methodology itself appears to be the skill author's own design, not something drawn from the literature — no external validation or refutation of that specific practice was found. Did not open the PMC radiology paper's body, so its listed claim is a lead (bounds) rather than a verified supporting finding."
+      },
+      {
+        "pillar": "Vendor guidance and prior art",
+        "verdict": "SUPPORTED",
+        "findings": [
+          {
+            "claim": "Skill quotes Claude Code best-practices doc's CLAUDE.md delete-test verbatim: \"would removing this cause Claude to make mistakes? If not, cut it\"",
+            "support": "supports",
+            "source": "https://code.claude.com/docs/en/best-practices",
+            "quote": "Keep it concise. For each line, ask: \"Would removing this cause Claude to make mistakes?\" If not, cut it. Bloated CLAUDE.md files cause Claude to ignore your actual instructions!"
+          },
+          {
+            "claim": "Same doc also endorses treating CLAUDE.md like code and testing changes by observing behavior shift, plus a named failure pattern for over-specified CLAUDE.md whose fix is ruthless pruning",
+            "support": "supports",
+            "source": "https://code.claude.com/docs/en/best-practices",
+            "quote": "Treat CLAUDE.md like code: review it when things go wrong, prune it regularly, and test changes by observing whether Claude's behavior actually shifts."
+          },
+          {
+            "claim": "Vendor doc's over-specified-CLAUDE.md failure pattern names the same delete-if-unneeded logic the skill applies at tier 2",
+            "support": "supports",
+            "source": "https://code.claude.com/docs/en/best-practices",
+            "quote": "The over-specified CLAUDE.md. If your CLAUDE.md is too long, Claude ignores half of it because important rules get lost in the noise. Fix: Ruthlessly prune. If Claude already does something correctly without the instruction, delete it or convert it to a hook."
+          },
+          {
+            "claim": "Anthropic's context-engineering guidance supports remove-and-observe maintenance of steering text, specifically as controlled ablation with blind grading",
+            "support": "bounds",
+            "source": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+            "quote": "It's best to start by testing a minimal prompt with the best model available to see how it performs on your task, and then add clear instructions and examples to improve performance based on failure modes found during initial testing."
+          },
+          {
+            "claim": "Ablation of individual prompt/instruction components to isolate their contribution is established methodology in LLM/NLP research, not a skill-specific invention",
+            "support": "prior-art",
+            "source": "https://arxiv.org/pdf/2507.02938",
+            "quote": "Ablation experiments systematically assess the contribution of individual components in prompt templates by removing one component from the prompt to isolate its effect."
+          },
+          {
+            "claim": "promptfoo (general-purpose LLM eval/A-B framework) does not document a built-in feature for removing a single instruction component and blind-grading control vs. ablated arms the way the skill's tier-3 template does",
+            "support": "bounds",
+            "source": "https://www.promptfoo.dev/docs/intro/",
+            "quote": "there is no specific reference to component-level ablation, blind grading against pre-registered criteria, or A/B comparison of prompt variants with component removal"
+          },
+          {
+            "claim": "DSPy performs automatic instruction search/optimization (COPRO, MiPROv2, SIMBA), a different but related task to the skill's necessity-testing of an existing line",
+            "support": "bounds",
+            "source": "https://haystack.deepset.ai/cookbook/prompt_optimization_with_dspy",
+            "quote": "DSPy is a framework for algorithmically optimizing model prompts and weights, treating LLM pipelines as programmes that can be automatically compiled and optimized."
+          },
+          {
+            "claim": "Claude Code's creator (Boris Cherny) has publicly advocated the same delete-then-reintroduce-line-by-line method the skill cites as 'practitioner guidance from Claude Code's creator'",
+            "support": "supports",
+            "source": "https://finance.biggo.com/news/954a98de-8b79-429f-bd7e-761c27a3b210",
+            "quote": "You should delete the entire system prompt, then add it back line by line to see what impact each line actually has"
+          },
+          {
+            "claim": "A second secondary source independently frames Cherny's practice explicitly as 'ablation' and reports the 80%-removed-for-Opus-5 detail the skill's stamp/expiry rule reflects",
+            "support": "prior-art",
+            "source": "https://www.dutchstartup.ai/en/tv/boris-cherny-just-told-us-to-delete-our-claude-md-files",
+            "quote": "he wants you to run the same ablation on your own setup"
+          },
+          {
+            "claim": "The Cherny quote is only available via secondary journalism, not a primary transcript, which is exactly the hedge the skill itself applies when citing it",
+            "support": "bounds",
+            "source": "https://www.dutchstartup.ai/en/tv/boris-cherny-just-told-us-to-delete-our-claude-md-files",
+            "quote": "A YouTube link to \"Boris Cherny's full interview\" is provided but the transcript itself is not included on this webpage."
+          },
+          {
+            "claim": "Existing practitioner tooling for CLAUDE.md maintenance (e.g. claude-md-slim) performs static/structural audits, not controlled removal experiments, so the skill's tier-3 automated arm appears to fill a real methodological gap rather than duplicate an existing tool",
+            "support": "bounds",
+            "source": "https://github.com/panjiangyi/claude-md-slim",
+            "quote": "Zero-dep audit script + decision tree + reproducible benchmark. Every claim cites the official docs."
+          }
+        ],
+        "gaps": "Could not fetch the primary Boris Cherny interview transcript itself (YouTube video, not text-fetchable via WebFetch) — both sources used are secondary journalism (BigGo Finance, DutchStartup.ai) paraphrasing/quoting it; the skill's own citation already flags this as an unverified transcript, and that hedge held up under this check. Did not verify whether OpenAI Evals, Langfuse, or PromptLayer A/B-testing features include a literal single-component-removal-with-blind-grading mode (only promptfoo and DSPy were checked in depth) — their general A/B/variant-testing capability was confirmed only via search snippets, not fetched primary docs, so their exact feature set relative to the skill's specific mechanic (verbatim component excision, parity-swap blind grading, mechanical two-thirds-majority tally) is unconfirmed either way. Found no named practitioner essay specifically on \"CLAUDE.md bloat\" using the term \"ablation\" other than the Cherny coverage above; the claude-md-slim and \"Prune Claude Code Skill\" tools found are static/structural auditors (closer to the skill's own Tier 2) rather than controlled Tier-3 experiments — no direct competitor to Tier 3 was located, though the search was not exhaustive so absence of evidence is weak."
+      }
+    ],
+    "critique": {
+      "attacks": [
+        {
+          "critique": "The decision rule's false-positive rate is undefined because it depends on an unmeasured property of the grader: whether it emits 'both'/'neither' or forced-chooses X/Y. The grader schema offers four verdicts but the prompt frames a pairwise choice ('which output satisfies the criterion'). If the grader forced-chooses, then ctrlPass + ablPass = n identically, so `degraded` reduces to ctrlPass >= ceil(2n/3) and `harmful` to ctrlPass <= n - ceil(2n/3); at n=3 these are ctrlPass>=2 and ctrlPass<=1 — exhaustive and mutually exclusive. Every probe then fires exactly one of degraded/harmful, `allNoDelta` is unreachable, and CEREMONY becomes a structurally impossible verdict. Under a coin-flip grader with 3 probes that gives P(false LOAD-BEARING) = 0.5^3 = 12.5% and P(CEREMONY) = 0. If instead the grader liberally answers 'both', CEREMONY becomes easy and 'any probe degraded' becomes a genuine disjunction that inflates false positives in the opposite direction. The method therefore has no stable operating characteristics, and nothing in the script or SKILL.md measures, reports, or guards the grader's verdict mix.",
+          "ruling": "BOUNDS",
+          "rationale": "Derived directly from tier3-arms.workflow.js lines 71-80: ctrlSatisfies/ablSatisfies are set from a single enum verdict, so a forced-choice grader makes them complementary by construction. The pillar-3 finding that pairwise judges are the reliability-preferred format (OpenAI: 'pairwise comparison or pass/fail for more reliability') is precisely what pushes a judge toward forced choice, and Anthropic's own guidance that 'LLM-as-judge graders should be closely calibrated with human experts' names the missing step. The core ablation logic (remove, run matched tasks, observe delta) is canonical and untouched by this — 'An ablation study aims to determine the contribution of a component ... by removing the component' — so this is a tally-implementation defect, not core unsoundness.",
+          "requiredEdit": "The report must include the grader verdict distribution (counts of X/Y/both/neither) per probe, and SKILL.md must state that a run in which the grader emitted zero 'both'/'neither' verdicts is UNRESOLVED regardless of tally, because CEREMONY is unreachable in that regime and the degraded/harmful split is a coin flip."
+        },
+        {
+          "critique": "The template has never been shown to discriminate. Its sole empirical record (VALIDATION.md) is a recursive self-ablation of the skill's own prose which returned CEREMONY 9/9 and whose own caveats concede the probes 'enumerate four of the five controls,' that only tier-3 design quality was probed, and that the arms produced 'test plans, not executed ablations.' There is no positive control (a component known load-bearing, run through the template to confirm it returns LOAD-BEARING) and no placebo/null control (an irrelevant line, to measure the false-positive floor). The instrument's sensitivity and specificity are both unknown, yet its CEREMONY verdict authorizes deletion of steering.",
+          "ruling": "BOUNDS",
+          "rationale": "VALIDATION.md line 11 concedes probe telegraphing in the author's own words; line 13 concedes 'plan quality is a proxy for run quality'; line 38 records that the current derived-arm contract 'passed a syntax/guard check but not yet a full live run' — so even the 27/27 execution validated a superseded arg contract. This is an unmet evidentiary burden, not a demonstrated failure: effect sizes the skill targets (3/3 vs 1/3 compliance, per the worked example) are large enough that a noisy grader could still carry signal, and the verbatim paste-back rule makes an erroneous deletion a two-way door. It becomes KILLS if the controls are run and the template fails to recover a known load-bearing line.",
+          "requiredEdit": "SKILL.md must state that tier-3 verdicts are uncalibrated until a positive control (known load-bearing component) and a placebo control (irrelevant line) have been run through the template and their results recorded in VALIDATION.md, and must label the current evidence base as one self-ablation on a superseded arg contract."
+        },
+        {
+          "critique": "Blinding is weaker than the published standard and, at the enforced minimum reps, the blinding scheme itself manufactures the exact asymmetry the threshold measures. The literature's mitigation is to query the judge twice per pair in both orders and count only order-consistent verdicts; the template queries once with a deterministic (p+r)%2 swap. At reps=3 that yields a 2/1 positional split within every probe — for even p, control occupies position X in 2 of 3 reps. A grader with pure first-position preference and zero task signal then produces ctrlPass=2, ablPass=1, which satisfies both `degraded` conditions (ctrlPass>=2, n-ablPass>=2) exactly. One rep of positional bias is the entire decision margin.",
+          "ruling": "BOUNDS",
+          "rationale": "Grounded in the fetched mitigation standard — 'a conservative approach is to call a judge twice by swapping the order of two answers and only declare a win when an answer is preferred in both orders' — and in the measured severity ('Claude-v1 was consistent in only 23.8% of pairs ... Only GPT-4 outputs consistent results in more than 60% of cases'). Partial mitigation exists by accident: because parity alternates across probes too, a purely position-biased grader makes even-index probes degraded and odd-index probes harmful, which collapses to UNRESOLVED rather than a false LOAD-BEARING. But noise that spoils the odd-probe harmful thresholds while leaving even-probe degraded thresholds intact converts bias into a false LOAD-BEARING, and nothing detects that. Fixable by doubling the grader calls (9 -> 18 in a default run).",
+          "requiredEdit": "Grade each pair twice with both orderings and count a pass only when the verdict is order-consistent (discard inconsistent pairs, reducing n); or, at minimum, require reps to be even and balance the X/Y split within each probe rather than across probes. SKILL.md must state that deterministic parity alternation is not equivalent to the double-query standard."
+        },
+        {
+          "critique": "The reps>=3 floor the script throws to enforce (line 29, 'single runs measure noise') is not enforced where it matters. Grader failures produce g=null, those rows are filtered out at line 69, and n is recomputed per probe from surviving rows. At n=1, ceil(2*1/3)=1, so a single surviving rep with ctrlPass=1 and ablPass=0 sets `degraded` — and `anyDegraded && !anyHarmful` then yields LOAD-BEARING for the whole component off one grader call. At n=2 the same holds with 2/2. The skill's own stated rule is violated silently, with no warning in the report, which prints 'x reps' from the requested REPS in the stamp line while per-probe n may be far lower.",
+          "ruling": "BOUNDS",
+          "rationale": "Read directly off lines 28-29, 64, 69-75 and 97 of tier3-arms.workflow.js: the entry gate validates the requested reps, the tally uses surviving reps, and `report` line 97 stamps `${REPS}` (requested) while line 99 prints the per-probe n — so a degraded n is visible only to a reader who compares the two. This is a straightforward defect, not a challenge to the method's logic.",
+          "requiredEdit": "The tally must force UNRESOLVED for any probe whose surviving n < 3 (and for the run if any probe is dropped), and the report must state grader-failure counts explicitly rather than leaving the discrepancy implicit between the stamp line and the per-probe lines."
+        },
+        {
+          "critique": "CEREMONY is an acceptance of the null with no power analysis, and the no-delta band is wide enough to swallow real effects. `allNoDelta` accepts |ctrlPass - ablPass| <= floor(n/3), which at n=3 is 1: control 3/3 versus ablated 2/3 — a 33-point compliance drop — is classified as no delta, hence CEREMONY, hence 'delete'. The design cannot distinguish 'no effect' from 'one-third effect' at its own enforced minimum, yet CEREMONY is the verdict that triggers the destructive action. Every fetched source discussing minimum-N floors sets one well above 3.",
+          "ruling": "BOUNDS",
+          "rationale": "Line 79 of the script gives the band; line 73 gives the degradation threshold; the gap between them is the unclassified-but-called-CEREMONY zone. Pillar-2 evidence: 'With very low variance, both false positives and false negatives occurred at N < 8' and the pilot-trial literature's 'Whenever a pilot trial progression criteria is specified in the form of Eq. [1], it is mathematically equivalent to a hypothesis test' — the template's ceil(2n/3) and floor(n/3) constants are fixed regardless of n and show no derivation from any target error rate, which is exactly what a proper screening design supplies. Mitigated, not cured, by the verbatim paste-back rule making deletion reversible.",
+          "requiredEdit": "CEREMONY must be worded as 'no delta detected at this n' rather than 'no reproducible delta', SKILL.md must state that a 3x3 run cannot detect effects smaller than roughly one rep in three and that CEREMONY is weak evidence of absence, and the recommended action should be 'delete only if the component has no violation history; otherwise raise reps.'"
+        },
+        {
+          "critique": "The script's central claim — 'the two arms differ by exactly the component and nothing else' (line 34) — is false as implemented. `A.steering.split(A.component).join('')` removes every occurrence, not one: the gate at line 35 checks `includes`, never a count, so a short component string appearing twice silently ablates more than the component under test. Removal also leaves structural residue: an orphaned bullet marker, a doubled blank line, a heading whose body vanished. And it shortens the steering, shifting the context position of everything downstream. The arms therefore differ by the component plus an unmeasured formatting and position perturbation.",
+          "ruling": "BOUNDS",
+          "rationale": "Code-derived from lines 34-37. The perturbation is not obviously negligible given pillar-4's evidence that 'performance on MMLU for example can vary by ±23% depending on the choice of delimiter' and that one can 'manipulate model rankings to put any model in the lead by only modifying the single character separating examples', plus 'Lost in the Middle': 'performance can degrade significantly when changing the position of relevant information.' This is the BASED-XAI critique landing squarely — 'how to identify useful baselines for XAI methods and viable perturbations for ablation studies' — on a design that believed it had sidestepped perturbation choice by using exact deletion.",
+          "requiredEdit": "Throw when the component occurs more than once in steering; normalize the ablated arm (collapse the blank line or list-marker residue left by removal) and state in SKILL.md that pure deletion also changes steering length and downstream position, so multi-line components should be replaced with a length-matched neutral placeholder rather than excised."
+        },
+        {
+          "critique": "Blinding is label-level only, and the gates that enforce it protect the wrong field. Line 31 forbids a probe containing the component verbatim ('probes are tasks, not quizzes') but nothing constrains the criterion — which is by definition 'the pre-registered checkable intended effect' and in practice will often be a paraphrase of the instruction under test. The grader is then effectively asked 'which of these two outputs followed the rule', and for any component with a textual or stylistic signature the grader can identify the arm from the output content regardless of which label it wears. The X/Y swap blinds nothing in that case.",
+          "ruling": "BOUNDS",
+          "rationale": "Lines 31-32 versus line 62 of the script: the anti-quiz gate applies only to `A.probes`, and the criterion is interpolated straight into the grader prompt. The blinding rationale the design invokes — 'Blinding of outcome assessors minimizes the risk of detection bias' — depends on the assessor being unable to infer allocation, which content leakage restores. Bounded rather than fatal because for outcome-shaped criteria (did the linter run, was the check performed) the leak is weak or absent.",
+          "requiredEdit": "SKILL.md must state that blinding is label-level only and fails when the criterion restates the component's surface form, and must require criteria phrased as observable outcome properties rather than as restatements of the instruction."
+        },
+        {
+          "critique": "The grader and the workers are the same model family by default ('sonnet' for both, script lines 52-54 and 63). These are not independent measurements. The failure mode that matters is not self-preference — with both arms produced by the same family there is no cross-family 'other' to disfavor — but correlated blind spots: a model that does not natively weight the property the component encodes will both under-produce it in the ablated arm and under-detect it as a grader. That correlation biases systematically toward CEREMONY, the verdict that authorizes deletion.",
+          "ruling": "BOUNDS",
+          "rationale": "The pillar-3 literature is explicitly silent on the both-arms-same-family configuration ('none directly addresses whether the bias has any differential (X-vs-Y) effect when both arms share the judge's model family'), so the standard egocentric-bias attack — 'Egocentric Bias arises when LLMs favor outputs generated by the same model' — does not transfer as a differential X-vs-Y effect and I decline to assert it. The correlated-instrument argument stands on its own logic and is unaddressed by anything in the skill. Anthropic's guidance names the missing control: 'LLM-as-judge graders should be closely calibrated with human experts.'",
+          "requiredEdit": "State in SKILL.md that grader-worker independence is not established, recommend a grader from a different model family (or a different tier) than the workers where available, and require human spot-checking of grader verdicts on at least one probe before a CEREMONY verdict authorizes deletion."
+        },
+        {
+          "critique": "Pre-registration is asserted at the frame gate and then quietly undone at the exit. The UNRESOLVED action is 'do not act — refine probes or raise reps and re-run' (line 84). Nothing records the prior frame or the prior result, nothing requires re-approval of a changed frame, and nothing bounds the number of attempts. An auditor who wants a line deleted can re-run with adjusted probes until CEREMONY appears, and the stamped report of the final run will look identical to a first-attempt run. Optional stopping and probe-shopping re-enter through the door the pre-registration gate was built to close.",
+          "ruling": "BOUNDS",
+          "rationale": "Line 84 of the script and the absence of any attempt counter or prior-run field in the returned report object (lines 86-106). This is exactly the hazard the cited pre-registration rationale exists to prevent — 'Preregistration of an analysis plan is committing to analytic steps without advance knowledge of the research outcomes' and its warning against 'the garden of forking paths' — and the three-outcome design literature the UNRESOLVED branch is otherwise well-supported by ('Allowing for an intermediate result between stop and go may reduce the probability of incorrect decisions') does not license unlimited re-specification.",
+          "requiredEdit": "SKILL.md must require that a re-run after UNRESOLVED records the prior frame and result in the new report, that any change to probes or criterion voids the prior pre-registration and needs fresh human approval, and that the attempt number appears in the stamp."
+        },
+        {
+          "critique": "The verdict fires on 'any of 3-6 probes shows the delta' with no correction across probes — the classic test-many-flag-any pattern.",
+          "ruling": "BOUNDS",
+          "rationale": "Structurally real (line 77, `anyDegraded`, no correction) and the cited mechanism holds — 'Each test has its own chance of a Type I error (false positive), so the overall probability of making at least one false positive increases as the number of tests grows.' But the direction is not what it looks like, and the skill should say so: under a forced-choosing grader the complementarity shown in attack 1 makes LOAD-BEARING require ALL probes degraded, so 'any' behaves as a conjunction and is conservative; only when the grader uses 'both'/'neither' does 'any' become a genuine disjunction that inflates false positives. The multiple-comparisons exposure is therefore real but entangled with, and secondary to, the undefined grader regime — it cannot be corrected in isolation.",
+          "requiredEdit": "Report the count of degraded probes rather than a boolean, and state in SKILL.md that a LOAD-BEARING verdict resting on one probe of six is a screening signal warranting a re-run with that probe replicated, not a finding."
+        },
+        {
+          "critique": "The design borrows clinical-trial vocabulary — 'arms', 'control vs ablated', 'blind grading' — that presumes randomized allocation the design does not perform. The label swap is a deterministic function of (p+r), not a randomization, and no source validates parity-keyed swapping as equivalent to randomized blinding.",
+          "ruling": "FAILS",
+          "rationale": "The vocabulary imports a guarantee the design lacks, but the guarantee is irrelevant here: randomized allocation exists to control selection bias among heterogeneous subjects, and this design has none — every probe receives both conditions by construction, which is a matched-pairs comparison, a stronger control for probe heterogeneity than randomized parallel groups, not a weaker one. 'Arm' is also standard loose usage in ML ablation writing, and pillar-1's canonical definition ('removing the component, and then analyzing the resultant performance of the system') carries no randomization requirement. The real defect in the swap scheme is its within-probe imbalance, which is attack 3, not its determinism per se."
+        },
+        {
+          "critique": "'Ablation' is misappropriated ML terminology dressed onto prose editing, and the skill reinvents what existing tooling (promptfoo, DSPy, claude-md-slim) already does.",
+          "ruling": "FAILS",
+          "rationale": "Both halves collapse against the findings. The canonical definition matches the design exactly — 'An ablation study aims to determine the contribution of a component to an AI system by removing the component, and then analyzing the resultant performance of the system' — the term is already generalized to prompt components in a reference glossary ('systematic removal or alteration of components in a model or system'), and published 2025 LLM-agent work runs the identical pattern ('Ablation studies highlight the complete example and function usage examples as the primary contributors'). On prior art, promptfoo has 'no specific reference to component-level ablation, blind grading against pre-registered criteria, or A/B comparison of prompt variants with component removal', DSPy solves the different problem of instruction search, and claude-md-slim is a static auditor. No superior prior art for this specific mechanic was located. SKILL.md also never claims venue-checklist status for ablation, so the 'borrowed authority' charge has no textual purchase."
+        },
+        {
+          "critique": "The skill's practitioner citation rests on an unlocatable interview transcript, and its central expiry claim ('verdicts expire on model upgrade') is a bare design stance with no external support — an unfalsifiable premise doing load-bearing work.",
+          "ruling": "FAILS",
+          "rationale": "The citation hedge is already in the text ('unverified transcript — locate the original before citing onward') and survived independent checking: only secondary journalism exists. The primary vendor claim it leans on is verified verbatim — 'For each line, ask: \"Would removing this cause Claude to make mistakes?\" If not, cut it.' The expiry premise is in fact better supported than SKILL.md line 44 admits: Anthropic's own migration documentation states 'Claude Opus 5 verifies its own work without being told to, so remove explicit verification or self-check instructions carried over from prompts tuned for earlier models; leaving them in causes over-verification', and cross-version drift is measured ('GPT-4 March 2023: 84% accuracy; GPT-4 June 2023: 51%'). The skill under-claims here; the honest edit is to add the citation, not to weaken the stance."
+        }
+      ],
+      "overall": "LEGITIMATE-WITH-BOUNDS",
+      "rationale": "The core method is not attackable: remove-one-component / matched-probes / observe-delta is the canonical ablation definition applied to a component type (prompt and steering text) where published 2025 work already runs the same pattern, and the surrounding premises (model-version drift, instruction accretion, vendor delete-tests) are all independently verified. The naming, the framing, and the citation discipline survive attack; the skill's own hedges held up under checking, and its expiry stance is better supported than it claims. What does not survive is the measurement layer. Three defects are load-bearing: (1) the tally's error characteristics are undefined because they invert depending on whether the grader forced-chooses or uses 'both'/'neither' — in the forced-choice regime CEREMONY is a structurally unreachable verdict and a coin-flip grader returns false LOAD-BEARING 12.5% of the time at 3 probes, and nothing measures or reports which regime a run was in; (2) the instrument has never been shown to discriminate — no positive control, no placebo control, and the only validation record is a recursive self-ablation on a now-superseded arg contract whose own caveats concede probe telegraphing; (3) the blinding is a single-query parity swap that at the enforced minimum reps produces a 2:1 positional imbalance exactly equal to the decision threshold, where the field standard is double-query with order-consistency. Two outright code defects compound these: grader failures silently shrink per-probe n below the reps>=3 floor the script throws to enforce, and the derived ablated arm is claimed to differ 'by exactly the component and nothing else' while split/join removes all occurrences and leaves structural and length residue. None of these is fatal to the method — each has a stated edit, and the verbatim paste-back rule keeps erroneous deletions reversible — but until the control runs exist, tier-3 verdicts are screening signals from an uncalibrated instrument, and SKILL.md nowhere says so. The exploratory/screening framing is the strongest defense available for the small-n design and the skill never states it."
+    }
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Sweep"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Critique"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "research:ml-ablation",
+      "phaseIndex": 1,
+      "phaseTitle": "Sweep",
+      "agentId": "acc8890606cc1c6bc",
+      "model": "claude-sonnet-5",
+      "state": "done",
+      "startedAt": 1786073823828,
+      "queuedAt": 1786073821689,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Ablation studies in machine learning — definition fidelity,…",
+      "promptPreview": "You are validating the methodological legitimacy of a locally-authored Claude Code skill named \"ablation\". First Read both files in full:\n- C:/Users/billy/.claude/skills/ablation/SKILL.md (the skill)\n- C:/Users/billy/.claude/skills/ablation/scripts/tier3-arms.workflow.js (its automation template)\nThen research your pillar on the live web: load web tools via ToolSearch (query \"select:WebSearch,WebF…",
+      "lastProgressAt": 1786074170560,
+      "tokens": 93867,
+      "toolCalls": 37,
+      "durationMs": 346732,
+      "resultPreview": "{\"pillar\":\"Ablation studies in machine learning — definition fidelity, rigor-norm status, published critiques, and prompt/steering-component precedent\",\"verdict\":\"MIXED\",\"findings\":[{\"claim\":\"Canonical ML definition of 'ablation study' matches the skill's remove-component/compare/observe-delta method\",\"support\":\"supports\",\"source\":\"https://en.wikipedia.org/wiki/Ablation_(artificial_intelligence)\",…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "research:experiment-design",
+      "phaseIndex": 1,
+      "phaseTitle": "Sweep",
+      "agentId": "a59e8765d29b89d88",
+      "model": "claude-sonnet-5",
+      "state": "done",
+      "startedAt": 1786073824606,
+      "queuedAt": 1786073821690,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Experimental-design standards",
+      "promptPreview": "You are validating the methodological legitimacy of a locally-authored Claude Code skill named \"ablation\". First Read both files in full:\n- C:/Users/billy/.claude/skills/ablation/SKILL.md (the skill)\n- C:/Users/billy/.claude/skills/ablation/scripts/tier3-arms.workflow.js (its automation template)\nThen research your pillar on the live web: load web tools via ToolSearch (query \"select:WebSearch,WebF…",
+      "lastProgressAt": 1786074138813,
+      "tokens": 75710,
+      "toolCalls": 28,
+      "durationMs": 314207,
+      "resultPreview": "{\"pillar\":\"Experimental-design standards\",\"verdict\":\"MIXED\",\"gaps\":\"No source verified/found specifically for: (a) 'counterbalancing' as a named methodological concept applied to deterministic (non-random) label-swap schemes like this template's (p+r)%2 swap; (b) any standard from LLM/agent-evaluation methodology (all fetched sources are clinical-trial, psychology, or regression-statistics literat…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "research:llm-judge",
+      "phaseIndex": 1,
+      "phaseTitle": "Sweep",
+      "agentId": "a73779eb2c3b1f446",
+      "model": "claude-sonnet-5",
+      "state": "done",
+      "startedAt": 1786073824870,
+      "queuedAt": 1786073821690,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "LLM-as-judge validity",
+      "promptPreview": "You are validating the methodological legitimacy of a locally-authored Claude Code skill named \"ablation\". First Read both files in full:\n- C:/Users/billy/.claude/skills/ablation/SKILL.md (the skill)\n- C:/Users/billy/.claude/skills/ablation/scripts/tier3-arms.workflow.js (its automation template)\nThen research your pillar on the live web: load web tools via ToolSearch (query \"select:WebSearch,WebF…",
+      "lastProgressAt": 1786074058380,
+      "tokens": 66749,
+      "toolCalls": 18,
+      "durationMs": 233509,
+      "resultPreview": "{\"pillar\":\"LLM-as-judge validity\",\"verdict\":\"MIXED\",\"findings\":[{\"claim\":\"Position, verbosity, and self-enhancement bias are established, distinct failure modes in pairwise LLM judging (foundational source for the whole practice)\",\"support\":\"supports\",\"source\":\"https://arxiv.org/abs/2306.05685\",\"quote\":\"We examine the usage and limitations of LLM-as-a-judge, including position, verbosity, and self…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "research:drift",
+      "phaseIndex": 1,
+      "phaseTitle": "Sweep",
+      "agentId": "a8efc51b66a828bd9",
+      "model": "claude-sonnet-5",
+      "state": "done",
+      "startedAt": 1786073825858,
+      "queuedAt": 1786073821690,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Prompt sensitivity and model-version drift",
+      "promptPreview": "You are validating the methodological legitimacy of a locally-authored Claude Code skill named \"ablation\". First Read both files in full:\n- C:/Users/billy/.claude/skills/ablation/SKILL.md (the skill)\n- C:/Users/billy/.claude/skills/ablation/scripts/tier3-arms.workflow.js (its automation template)\nThen research your pillar on the live web: load web tools via ToolSearch (query \"select:WebSearch,WebF…",
+      "lastProgressAt": 1786073969478,
+      "tokens": 61653,
+      "toolCalls": 18,
+      "durationMs": 143618,
+      "resultPreview": "{\"pillar\":\"Prompt sensitivity and model-version drift\",\"verdict\":\"SUPPORTED\",\"findings\":[{\"claim\":\"Same prompt/task behaves differently across versions of the same model product over time\",\"support\":\"supports\",\"source\":\"https://arxiv.org/abs/2307.09009\",\"quote\":\"GPT-3.5 and GPT-4 are the two most widely used large language model (LLM) services. However, when and how these models are updated over t…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "research:prior-art",
+      "phaseIndex": 1,
+      "phaseTitle": "Sweep",
+      "agentId": "af4634b2a58b7e339",
+      "model": "claude-sonnet-5",
+      "state": "done",
+      "startedAt": 1786073824318,
+      "queuedAt": 1786073821690,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Vendor guidance and prior art",
+      "promptPreview": "You are validating the methodological legitimacy of a locally-authored Claude Code skill named \"ablation\". First Read both files in full:\n- C:/Users/billy/.claude/skills/ablation/SKILL.md (the skill)\n- C:/Users/billy/.claude/skills/ablation/scripts/tier3-arms.workflow.js (its automation template)\nThen research your pillar on the live web: load web tools via ToolSearch (query \"select:WebSearch,WebF…",
+      "lastProgressAt": 1786073978527,
+      "tokens": 73950,
+      "toolCalls": 16,
+      "durationMs": 154209,
+      "resultPreview": "{\"pillar\":\"Vendor guidance and prior art\",\"verdict\":\"SUPPORTED\",\"findings\":[{\"claim\":\"Skill quotes Claude Code best-practices doc's CLAUDE.md delete-test verbatim: \\\"would removing this cause Claude to make mistakes? If not, cut it\\\"\",\"support\":\"supports\",\"source\":\"https://code.claude.com/docs/en/best-practices\",\"quote\":\"Keep it concise. For each line, ask: \\\"Would removing this cause Claude to ma…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "adversarial-critic",
+      "phaseIndex": 2,
+      "phaseTitle": "Critique",
+      "agentId": "ae9292b7cf73fa6bc",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1786074173927,
+      "queuedAt": 1786074172316,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "LEGITIMATE-WITH-BOUNDS",
+      "promptPreview": "You are an adversarial methodology reviewer. Read both files in full:\n- C:/Users/billy/.claude/skills/ablation/SKILL.md\n- C:/Users/billy/.claude/skills/ablation/scripts/tier3-arms.workflow.js\n\nBelow are source-grounded research findings from five pillars. Make the STRONGEST case that this skill is NOT a legitimate method: misappropriated terminology, statistically invalid inference, judge-bias vul…",
+      "lastProgressAt": 1786074428897,
+      "tokens": 57232,
+      "toolCalls": 4,
+      "durationMs": 254970,
+      "resultPreview": "{\"attacks\":[{\"critique\":\"The decision rule's false-positive rate is undefined because it depends on an unmeasured property of the grader: whether it emits 'both'/'neither' or forced-chooses X/Y. The grader schema offers four verdicts but the prompt frames a pairwise choice ('which output satisfies the criterion'). If the grader forced-chooses, then ctrlPass + ablPass = n identically, so `degraded`…"
+    }
+  ],
+  "totalTokens": 429161,
+  "totalToolCalls": 121
+}
