@@ -1,0 +1,1134 @@
+{
+  "title": "Does the rewrite comparison work? Testing it with a rewrite we know is worse, and two we know mean the same thing",
+  "stamp": "SUBSTITUTION POSITIVE CONTROL (clear wording vs vague rewrite) — workers+graders claude-sonnet-5 (medium); orchestrator claude-opus-5; 2026-08-10 | SUBSTITUTION PLACEBO 1 — meaning-preserving rewrite (same instruction, different words, near-identical length) — workers+graders claude-sonnet-5 (medium); orchestrator claude-opus-5; 2026-08-10 | SUBSTITUTION PLACEBO 2 — length placebo (same instruction, 3.4x longer, no added information) — workers+graders claude-sonnet-5 (medium); orchestrator claude-opus-5; 2026-08-10",
+  "verdict": "KEEP THE ORIGINAL + NO DIFFERENCE + NO DIFFERENCE",
+  "verdictClass": "warn",
+  "banner": "UNCALIBRATED — read the calibration status before trusting these verdicts.  |  UNCALIBRATED — read the calibration status before trusting these verdicts.  |  UNCALIBRATED — read the calibration status before trusting these verdicts.  |  \"- All test files use the suffix _spec.py, never the test_ prefix conve…\" -> KEEP THE ORIGINAL: passed 21 of 21 with the ORIGINAL, 0 of 21 with the REWRITE  |  \"- All test files use the suffix _spec.py, never the test_ prefix conve…\" -> NO DIFFERENCE: passed 21 of 21 with the ORIGINAL, 20 of 21 with the REWRITE  |  \"- All test files use the suffix _spec.py, never the test_ prefix conve…\" -> NO DIFFERENCE: passed 20 of 21 with the ORIGINAL, 20 of 21 with the REWRITE",
+  "rules": [
+    "A version wins \"KEEP THE ORIGINAL\" for a task when at least two-thirds of the repeats passed with the ORIGINAL and at least two-thirds failed with the REWRITE. (per-task flag in the code: degraded = ctrlPass >= ceil(2n/3) && (n - ablPass) >= ceil(2n/3))",
+    "\"USE THE REWRITE\" is the mirror image: passes with the REWRITE, fails with the ORIGINAL. (per-task flag in the code: harmful = ablPass >= ceil(2n/3) && (n - ctrlPass) >= ceil(2n/3))",
+    "\"NO DIFFERENCE\" requires every task to show no meaningful gap between the two versions. (allNoDelta: every probe has |ctrlPass - ablPass| <= floor(n/3))",
+    "Any task left with fewer usable repeats than its significance level demands (5 at the standard 0.05 setting; never fewer than 3) makes the whole run INCONCLUSIVE — never guessed around. (lowN = n < max(3, ceil(-log2(alpha))) -> UNRESOLVED)",
+    "Every paired answer is judged twice with the labels swapped; it counts only if the judge says the same thing both times. Failed workers and disagreeing judgments are thrown out, not scored.",
+    "The report also shows, per task and overall, how often a gap this big would show up by chance IF the text truly made no difference. It is NOT the chance the verdict is wrong. The number is figured for the direction the data leaned; a reader who did not pick a direction in advance should double it. Evidence strength only; it never decides the verdict. (one-sided exact McNemar sign test on the forced picks: p = P(Binomial(b+c, 0.5) >= max(b,c)))",
+    "Looking at several tasks gives luck several chances, so the standout task’s fluke chance is also shown corrected for the number of tasks examined. The correction treats tasks as independent — a simplification that errs on the cautious side here, understating significance rather than inflating it. (Sidak: 1 - (1 - min p)^tasks)",
+    "Each \"What this test could have caught\" table supposes the text really matters at fixed strengths and shows the chance the run design reaches the bar — never figured from the observed result, because quoting how good a run was at catching the very effect it happened to see would be circular (statisticians call that \"observed power\")."
+  ],
+  "rulesNote": "The verdict cutoffs are screening rules with fixed constants; the fluke-chance numbers (p-values) and 95% ranges are exact statistics reported alongside them (added 2026-08-09) so the strength of each verdict is visible. \"NO DIFFERENCE\" means \"no difference detected at this sample size\" — weaker than proof that the two versions are equivalent. Internal verdict names in the raw data for this report: KEEP THE ORIGINAL=ORIGINAL-BETTER, USE THE REWRITE=REPLACEMENT-BETTER, NO DIFFERENCE=NO-DIFFERENCE, INCONCLUSIVE=UNRESOLVED.",
+  "glossary": [
+    {
+      "term": "forced pick",
+      "def": "A repeat where the blind judges said one version passed and the other failed — consistently, in both label orders. The only repeats that carry direction."
+    },
+    {
+      "term": "usable repeat",
+      "def": "A repeat that survived to be scored: the worker produced output and the two blind judgings agreed once the labels were swapped."
+    },
+    {
+      "term": "worker",
+      "def": "The model that performed the task and wrote an answer."
+    },
+    {
+      "term": "grader",
+      "def": "The model that compared a pair of answers, blind, against the pre-registered question."
+    },
+    {
+      "term": "the bar",
+      "def": "The significance level (alpha) chosen before the run. A fluke chance at or under the bar counts as statistically clear."
+    },
+    {
+      "term": "fluke chance",
+      "def": "The p-value: how often a gap this big would show up by chance IF the text truly made no difference. Not the chance the verdict is wrong."
+    },
+    {
+      "term": "clear win",
+      "def": "A forced pick favoring the ORIGINAL."
+    }
+  ],
+  "finePrint": [
+    "Best-case numbers: the hypothetical assumes every changed repeat lands in favor of the ORIGINAL — the rest tie, none go the other way.",
+    "A fluke chance is NOT the chance the verdict is wrong — it answers \"how often would luck alone produce this?\", assuming the text changed nothing.",
+    "Fluke chances are one-sided, figured for the direction the data leaned; a reader who did not pick a direction in advance should double them.",
+    "The multiple-looks correction treats tasks as independent — a simplification that errs on the cautious side, understating significance.",
+    "Statistics are reported only; they never decide the verdict. The pre-registered screening rules decide."
+  ],
+  "sections": [
+    {
+      "heading": "What was tested — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "table": {
+        "columns": [
+          "Item",
+          "Detail"
+        ],
+        "rows": [
+          [
+            "Verdict",
+            "KEEP THE ORIGINAL — the rewrite did worse (internal name: ORIGINAL-BETTER)"
+          ],
+          [
+            "Original wording",
+            "- All test files use the suffix _spec.py, never the test_ prefix convention."
+          ],
+          [
+            "Rewrite it was tested against",
+            "- Test files should follow the project's usual naming convention."
+          ],
+          [
+            "Size of each version (nothing forces these to match — a large gap is itself a possible cause of any difference)",
+            "original 77 characters / 2 lines; rewrite 66 characters / 2 lines (-11)"
+          ],
+          [
+            "Calibration status",
+            "UNCALIBRATED: substitution mode is a distinct measurement claim, and no substitution-mode controls are attested for this run. Its verdicts count only once VALIDATION.md records, for this worker/grader configuration, a positive control (a clear wording beating a deliberately vague rewrite of it), a meaning-preserving placebo (a cosmetic rewrite returning NO-DIFFERENCE), and a length placebo (the same substance at markedly different length, also returning NO-DIFFERENCE — the check for verbosity bias)."
+          ],
+          [
+            "Question the judges answered",
+            "The response names or saves Python test files with a _spec.py suffix rather than a test_ prefix."
+          ],
+          [
+            "Design",
+            "3 tasks × 7 repeats × 2 versions (original / rewrite); every pair judged twice with the labels swapped"
+          ],
+          [
+            "Model + date stamp — \"workers\" answered the tasks, \"graders\" judged the pairs (verdicts expire on model change)",
+            "SUBSTITUTION POSITIVE CONTROL (clear wording vs vague rewrite) — workers+graders claude-sonnet-5 (medium); orchestrator claude-opus-5; 2026-08-10"
+          ],
+          [
+            "Attempt",
+            "3"
+          ],
+          [
+            "Earlier attempts (operator log, quoted verbatim from the run record)",
+            "attempt 1 (reps 5): UNRESOLVED via the 5-rep floor — perfect separation on every probe (14 of 14 forced picks favored the original, pooled p=6.1e-5, zero judge disagreements, zero grader failures) but probe 3 fell to n=4 when one worker's isolation worktree could not be verified. attempt 2 (reps 7): infrastructure no-op — the isolation guard refused all 42 worker worktrees, zero agents ran, zero data produced; the 42 locked worktrees were unlocked, removed, pruned and the baseline verified clean before this attempt. Criterion, probes, steering, models and alpha unchanged across all three attempts."
+          ],
+          [
+            "Recommended action",
+            "keep the original wording — the rewrite performed worse on these tasks"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "How strong is the evidence? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "Reported only — the pre-registered screening rules decide the verdict.{{^5}}",
+      "table": {
+        "columns": [
+          "What was measured",
+          "Value"
+        ],
+        "rows": [
+          [
+            "{{Forced pick}}s — repeats where judges picked a side",
+            "21 favored the ORIGINAL, 0 favored the REWRITE"
+          ],
+          [
+            "{{Fluke chance}}, all tasks combined{{^2}}{{^3}}",
+            "under 0.1% (p=4.8e-7)"
+          ],
+          [
+            "Standout task, corrected for examining 3 tasks{{^4}}",
+            "p=0.023"
+          ],
+          [
+            "{{The bar}} (alpha, chosen before the run)",
+            "0.05"
+          ]
+        ]
+      },
+      "howToRead": [
+        "Forced picks: the raw signal — which version won when the judges could tell the answers apart. Ties (both passed / neither passed) carry no direction.",
+        "Fluke chance: if the text truly made no difference, a split this lopsided would show up by chance this often.",
+        "Standout task: looking at 3 tasks gives luck 3 chances; the correction accounts for that.",
+        "The bar: a fluke chance at or under it counts as statistically clear."
+      ]
+    },
+    {
+      "heading": "Which wording did better, task by task? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "7× with the ORIGINAL, 7× with the REWRITE, per task; blind judges compared each pair.{{^5}}",
+      "howToRead": [
+        "What this shows: for each task, the share of {{usable repeat}}s that passed with the ORIGINAL vs with the REWRITE.",
+        "How it was judged: every pair was judged twice with the labels swapped; a repeat counts only when the two judgments agree.{{^2}}",
+        "Watch out: \"Thrown out\" repeats are dropped, never scored — few usable repeats weaken every number for that task. A \"-\" in the grader slot means that run predates separate grader-failure tracking (counted under worker failures).",
+        "Drill down: hover a bar for detail; click a task below the table for its rep-by-rep record."
+      ],
+      "chart": {
+        "label": "Share of usable repeats that passed, with the ORIGINAL vs with the REWRITE, per task",
+        "yUnit": "%",
+        "yMax": 100,
+        "series": [
+          "Passed with the ORIGINAL",
+          "Passed with the REWRITE"
+        ],
+        "groups": [
+          {
+            "label": "Task 1",
+            "values": [
+              100,
+              0
+            ],
+            "short": [
+              "7/7",
+              "0/7"
+            ],
+            "notes": [
+              "Task 1, with the ORIGINAL: 7 of 7 usable repeats passed",
+              "Task 1, with the REWRITE: 0 of 7 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 2",
+            "values": [
+              100,
+              0
+            ],
+            "short": [
+              "7/7",
+              "0/7"
+            ],
+            "notes": [
+              "Task 2, with the ORIGINAL: 7 of 7 usable repeats passed",
+              "Task 2, with the REWRITE: 0 of 7 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 3",
+            "values": [
+              100,
+              0
+            ],
+            "short": [
+              "7/7",
+              "0/7"
+            ],
+            "notes": [
+              "Task 3, with the ORIGINAL: 7 of 7 usable repeats passed",
+              "Task 3, with the REWRITE: 0 of 7 usable repeats passed"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "Task",
+          "Usable repeats",
+          "Passed with the ORIGINAL",
+          "Passed with the REWRITE",
+          "Judges: both passed",
+          "Judges: neither passed",
+          "Judges: picked one side",
+          "Thrown out (worker failed / grader failed / judges disagreed)",
+          "{{Fluke chance}} for this task{{^2}}{{^3}}",
+          "Result for this task"
+        ],
+        "rows": [
+          [
+            "Task 1",
+            7,
+            "7 of 7",
+            "0 of 7",
+            0,
+            0,
+            7,
+            "0 / 0 / 0",
+            "0.8% (p=0.008)",
+            "ORIGINAL DID BETTER"
+          ],
+          [
+            "Task 2",
+            7,
+            "7 of 7",
+            "0 of 7",
+            0,
+            0,
+            7,
+            "0 / 0 / 0",
+            "0.8% (p=0.008)",
+            "ORIGINAL DID BETTER"
+          ],
+          [
+            "Task 3",
+            7,
+            "7 of 7",
+            "0 of 7",
+            0,
+            0,
+            7,
+            "0 / 0 / 0",
+            "0.8% (p=0.008)",
+            "ORIGINAL DID BETTER"
+          ]
+        ]
+      },
+      "drilldown": [
+        {
+          "summary": "Task 1: Write a unit test for a function parse_row(line: str) -> dict that splits a CSV line into named fields. State … — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 59%–100%, with the REWRITE 0%–41%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/parsers_spec.py (the _spec.py suffix), while Y uses tests/test_parse_row.py (the test_ prefix).",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the test as tests/parse_row_spec.py (a _spec.py suffix), while Y saves it as tests/test_parse_row.py (a test_ prefix).",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file \"tests/parser_spec.py\" (a _spec.py suffix), while Y names it \"tests/test_parse_row.py\" (a test_ prefix).",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the test as `tests/csvutil/parse_row_spec.py` (the _spec.py suffix), while Y saves it as `tests/unit/parsers/test_csv_row.py` (the test_ prefix).",
+            "rep 5 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/parse_row_spec.py (uses the _spec.py suffix), while Y names it tests/test_parse_row.py (uses the test_ prefix).",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/parse_row_spec.py (the _spec.py suffix), while Y saves it as tests/test_parse_row.py (the test_ prefix).",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the test as `tests/csv_parser_spec.py` (a `_spec.py` suffix), while Y saves it as `tests/parsers/test_csv_line.py` (a `test_` prefix)."
+          ]
+        },
+        {
+          "summary": "Task 2: We fixed a bug where load_config returned None instead of raising KeyError for missing keys. Add a regression … — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 59%–100%, with the REWRITE 0%–41%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/config_spec.py (_spec.py suffix), while Y names it tests/test_config.py (test_ prefix).",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/config/load_config_spec.py (a _spec.py suffix), while Y uses tests/test_config.py (a test_ prefix).",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the test as tests/config_spec.py (a _spec.py suffix), while Y uses tests/test_config.py (a test_ prefix).",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/config_spec.py (uses the _spec.py suffix), while Y names it tests/test_config.py (uses the test_ prefix).",
+            "rep 5 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file `tests/config/load_config_spec.py` (the required _spec.py suffix), while Y names it `tests/test_config.py` (a test_ prefix).",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file `tests/config/load_config_spec.py` (a `_spec.py` suffix), while Y names it `tests/test_config.py` (a `test_` prefix).",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/config_spec.py (a _spec.py suffix), while Y uses tests/test_config.py (a test_ prefix)."
+          ]
+        },
+        {
+          "summary": "Task 3: Create a test module for the retry decorator in utils/retry.py (it retries a function up to 3 times on excepti… — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 59%–100%, with the REWRITE 0%–41%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/utils/retry_spec.py (_spec.py suffix), while Y uses tests/utils/test_retry.py (test_ prefix).",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/utils/retry_spec.py (a _spec.py suffix), while Y uses tests/utils/test_retry.py (a test_ prefix).",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names its file \"tests/utils/retry_spec.py\" (the _spec.py suffix), while Y names its file \"tests/utils/test_retry.py\" (the test_ prefix).",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/utils/retry_spec.py (a _spec.py suffix), while Y names it tests/utils/test_retry.py (a test_ prefix).",
+            "rep 5 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/utils/retry_spec.py (a _spec.py suffix), while Y uses tests/utils/test_retry.py (a test_ prefix).",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/utils/retry_spec.py (the _spec.py suffix), while Y saves it as tests/utils/test_retry.py (the test_ prefix).",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X names the file tests/utils/retry_spec.py (the _spec.py suffix), while Y uses tests/utils/test_retry.py (the test_ prefix)."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Could this test have seen a difference at all? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "If one wording really did beat the other, would this run have noticed? Each row imagines a different size of \"really better\" — from changing the result in 20% of tries to 80% — and shows the chance this test would have caught it.{{^1}} This run produced 21 {{forced pick}}s (5 needed to reach {{the bar}}).",
+      "howToRead": [
+        "How it was figured: detection chance = the chance that at least 5 of the 21 {{usable repeat}}s become {{clear win}}s for the ORIGINAL, when each repeat converts with the row's probability.{{^1}}",
+        "Watch out: always figured at fixed hypothetical strengths, never from the observed result — quoting how good a run was at catching the very effect it happened to see would be circular (statisticians call that \"observed power\")."
+      ],
+      "chart": {
+        "label": "Chance this design catches an effect, by hypothetical effect strength",
+        "yUnit": "%",
+        "yMax": 100,
+        "groups": [
+          {
+            "label": "20% converted",
+            "values": [
+              41.4
+            ],
+            "short": [
+              "41.4%"
+            ],
+            "notes": [
+              "If 20% of repeats became clear wins for the ORIGINAL, this design would catch it 41.4% of the time (best case)"
+            ]
+          },
+          {
+            "label": "40% converted",
+            "values": [
+              96.3
+            ],
+            "short": [
+              "96.3%"
+            ],
+            "notes": [
+              "If 40% of repeats became clear wins for the ORIGINAL, this design would catch it 96.3% of the time (best case)"
+            ]
+          },
+          {
+            "label": "60% converted",
+            "values": [
+              100
+            ],
+            "short": [
+              "100%"
+            ],
+            "notes": [
+              "If 60% of repeats became clear wins for the ORIGINAL, this design would catch it 100% of the time (best case)"
+            ]
+          },
+          {
+            "label": "80% converted",
+            "values": [
+              100
+            ],
+            "short": [
+              "100%"
+            ],
+            "notes": [
+              "If 80% of repeats became clear wins for the ORIGINAL, this design would catch it 100% of the time (best case)"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "If this share of repeats really became clear wins for the ORIGINAL",
+          "Chance this design would have caught it (best case)"
+        ],
+        "rows": [
+          [
+            "20%",
+            "41.4%"
+          ],
+          [
+            "40%",
+            "96.3%"
+          ],
+          [
+            "60%",
+            "100%"
+          ],
+          [
+            "80%",
+            "100%"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "What was tested — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "table": {
+        "columns": [
+          "Item",
+          "Detail"
+        ],
+        "rows": [
+          [
+            "Verdict",
+            "NO DIFFERENCE — both wordings performed the same at this sample size (internal name: NO-DIFFERENCE)"
+          ],
+          [
+            "Original wording",
+            "- All test files use the suffix _spec.py, never the test_ prefix convention."
+          ],
+          [
+            "Rewrite it was tested against",
+            "- Name every test file with a _spec.py suffix; do not use the test_ prefix."
+          ],
+          [
+            "Size of each version (nothing forces these to match — a large gap is itself a possible cause of any difference)",
+            "original 77 characters / 2 lines; rewrite 76 characters / 2 lines (-1)"
+          ],
+          [
+            "Calibration status",
+            "UNCALIBRATED: substitution mode is a distinct measurement claim, and no substitution-mode controls are attested for this run. Its verdicts count only once VALIDATION.md records, for this worker/grader configuration, a positive control (a clear wording beating a deliberately vague rewrite of it), a meaning-preserving placebo (a cosmetic rewrite returning NO-DIFFERENCE), and a length placebo (the same substance at markedly different length, also returning NO-DIFFERENCE — the check for verbosity bias)."
+          ],
+          [
+            "Question the judges answered",
+            "The response names or saves Python test files with a _spec.py suffix rather than a test_ prefix."
+          ],
+          [
+            "Design",
+            "3 tasks × 7 repeats × 2 versions (original / rewrite); every pair judged twice with the labels swapped"
+          ],
+          [
+            "Model + date stamp — \"workers\" answered the tasks, \"graders\" judged the pairs (verdicts expire on model change)",
+            "SUBSTITUTION PLACEBO 1 — meaning-preserving rewrite (same instruction, different words, near-identical length) — workers+graders claude-sonnet-5 (medium); orchestrator claude-opus-5; 2026-08-10"
+          ],
+          [
+            "Attempt",
+            "1"
+          ],
+          [
+            "Earlier attempts (operator log, quoted verbatim from the run record)",
+            "Companion to the substitution positive control (attempt 3, 2026-08-10: ORIGINAL-BETTER, 21/21 forced picks, pooled p=4.8e-7). Identical steering, probes, criterion, models, alpha and reps; only the rewrite differs — here it preserves the instruction's meaning, so the pre-registered expectation is NO-DIFFERENCE. A directional verdict would mean the instrument invents differences between equivalent wordings."
+          ],
+          [
+            "Recommended action",
+            "either wording performs the same at this sample size — choose on other grounds (brevity, clarity, token cost), or raise reps if the choice matters"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "How strong is the evidence? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "Reported only — the pre-registered screening rules decide the verdict.{{^5}}",
+      "table": {
+        "columns": [
+          "What was measured",
+          "Value"
+        ],
+        "rows": [
+          [
+            "{{Forced pick}}s — repeats where judges picked a side",
+            "1 favored the ORIGINAL, 0 favored the REWRITE"
+          ],
+          [
+            "{{Fluke chance}}, all tasks combined{{^2}}{{^3}}",
+            "50% (p=0.5)"
+          ],
+          [
+            "Standout task, corrected for examining 3 tasks{{^4}}",
+            "p=0.875"
+          ],
+          [
+            "{{The bar}} (alpha, chosen before the run)",
+            "0.05"
+          ]
+        ]
+      },
+      "howToRead": [
+        "Forced picks: the raw signal — which version won when the judges could tell the answers apart. Ties (both passed / neither passed) carry no direction.",
+        "Fluke chance: if the text truly made no difference, a split this lopsided would show up by chance this often.",
+        "Standout task: looking at 3 tasks gives luck 3 chances; the correction accounts for that.",
+        "The bar: a fluke chance at or under it counts as statistically clear."
+      ]
+    },
+    {
+      "heading": "Which wording did better, task by task? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "7× with the ORIGINAL, 7× with the REWRITE, per task; blind judges compared each pair.{{^5}}",
+      "howToRead": [
+        "What this shows: for each task, the share of {{usable repeat}}s that passed with the ORIGINAL vs with the REWRITE.",
+        "How it was judged: every pair was judged twice with the labels swapped; a repeat counts only when the two judgments agree.{{^2}}",
+        "Watch out: \"Thrown out\" repeats are dropped, never scored — few usable repeats weaken every number for that task. A \"-\" in the grader slot means that run predates separate grader-failure tracking (counted under worker failures).",
+        "Drill down: hover a bar for detail; click a task below the table for its rep-by-rep record."
+      ],
+      "chart": {
+        "label": "Share of usable repeats that passed, with the ORIGINAL vs with the REWRITE, per task",
+        "yUnit": "%",
+        "yMax": 100,
+        "series": [
+          "Passed with the ORIGINAL",
+          "Passed with the REWRITE"
+        ],
+        "groups": [
+          {
+            "label": "Task 1",
+            "values": [
+              100,
+              86
+            ],
+            "short": [
+              "7/7",
+              "6/7"
+            ],
+            "notes": [
+              "Task 1, with the ORIGINAL: 7 of 7 usable repeats passed",
+              "Task 1, with the REWRITE: 6 of 7 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 2",
+            "values": [
+              100,
+              100
+            ],
+            "short": [
+              "7/7",
+              "7/7"
+            ],
+            "notes": [
+              "Task 2, with the ORIGINAL: 7 of 7 usable repeats passed",
+              "Task 2, with the REWRITE: 7 of 7 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 3",
+            "values": [
+              100,
+              100
+            ],
+            "short": [
+              "7/7",
+              "7/7"
+            ],
+            "notes": [
+              "Task 3, with the ORIGINAL: 7 of 7 usable repeats passed",
+              "Task 3, with the REWRITE: 7 of 7 usable repeats passed"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "Task",
+          "Usable repeats",
+          "Passed with the ORIGINAL",
+          "Passed with the REWRITE",
+          "Judges: both passed",
+          "Judges: neither passed",
+          "Judges: picked one side",
+          "Thrown out (worker failed / grader failed / judges disagreed)",
+          "{{Fluke chance}} for this task{{^2}}{{^3}}",
+          "Result for this task"
+        ],
+        "rows": [
+          [
+            "Task 1",
+            7,
+            "7 of 7",
+            "6 of 7",
+            6,
+            0,
+            1,
+            "0 / 0 / 0",
+            "50% (p=0.5)",
+            "no difference"
+          ],
+          [
+            "Task 2",
+            7,
+            "7 of 7",
+            "7 of 7",
+            7,
+            0,
+            0,
+            "0 / 0 / 0",
+            "no forced picks",
+            "no difference"
+          ],
+          [
+            "Task 3",
+            7,
+            "7 of 7",
+            "7 of 7",
+            7,
+            0,
+            0,
+            "0 / 0 / 0",
+            "no forced picks",
+            "no difference"
+          ]
+        ]
+      },
+      "drilldown": [
+        {
+          "summary": "Task 1: Write a unit test for a function parse_row(line: str) -> dict that splits a CSV line into named fields. State … — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 59%–100%, with the REWRITE 42%–100%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X names the file tests/csv_utils_spec.py and Y names it tests/parse_row_spec.py — both use the _spec.py suffix rather than a test_ prefix.",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y state the file name as \"tests/parsers/parse_row_spec.py\", using the _spec.py suffix rather than a test_ prefix.",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X names its file tests/csv_utils_spec.py and Y names its file tests/parsers/csv_spec.py — both use the _spec.py suffix, neither uses a test_ prefix for the file itself.",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X (tests/parsers/parse_row_spec.py) and Y (tests/parsing/parse_row_spec.py) name the file with a _spec.py suffix and neither uses a test_ prefix.",
+            "rep 5 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves as tests/csv_utils_spec.py and Y saves as tests/parse_row_spec.py — both use the _spec.py suffix, not a test_ prefix.",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X names the file tests/parse_row_spec.py and Y names it tests/csv_utils_spec.py — both use the _spec.py suffix, neither uses a test_ prefix.",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/parse_row_spec.py (suffix only, no test_ prefix), while Y saves it as tests/test_parse_row_spec.py, which still carries the test_ prefix the criterion says to avoid."
+          ]
+        },
+        {
+          "summary": "Task 2: We fixed a bug where load_config returned None instead of raising KeyError for missing keys. Add a regression … — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 59%–100%, with the REWRITE 59%–100%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X names the file tests/app/config_spec.py and Y names it tests/config/loader_spec.py — both use the _spec.py suffix, not a test_ prefix.",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the test file `tests/config_spec.py`, using the `_spec.py` suffix rather than a `test_` prefix.",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the test file `tests/config_spec.py`, using the `_spec.py` suffix rather than a `test_` prefix.",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the test file `tests/config_spec.py`, using the `_spec.py` suffix rather than a `test_` prefix.",
+            "rep 5 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X names the file tests/config_spec.py and Y names it tests/app/config_spec.py — both use the _spec.py suffix, neither uses a test_ prefix.",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file tests/config_spec.py, using the _spec.py suffix rather than a test_ prefix.",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the test file tests/config_spec.py, using the _spec.py suffix rather than a test_ prefix."
+          ]
+        },
+        {
+          "summary": "Task 3: Create a test module for the retry decorator in utils/retry.py (it retries a function up to 3 times on excepti… — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 59%–100%, with the REWRITE 59%–100%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file tests/utils/retry_spec.py using the _spec.py suffix, with no test_ prefix used anywhere.",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the same file path tests/utils/retry_spec.py (and Y additionally uses conftest.py, not a test_-prefixed file), so both satisfy the _spec.py suffix criterion identically.",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file tests/utils/retry_spec.py, using the _spec.py suffix rather than a test_ prefix.",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file \"tests/utils/retry_spec.py\", using the _spec.py suffix rather than a test_ prefix.",
+            "rep 5 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file \"tests/utils/retry_spec.py\" using the _spec.py suffix, not a test_ prefix.",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file \"tests/utils/retry_spec.py\" — a _spec.py suffix, not a test_ prefix.",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file \"tests/utils/retry_spec.py\" using the _spec.py suffix, not a test_ prefix."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Could this test have seen a difference at all? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "If one wording really did beat the other, would this run have noticed? Each row imagines a different size of \"really better\" — from changing the result in 20% of tries to 80% — and shows the chance this test would have caught it.{{^1}} This run produced 1 {{forced pick}} — fewer than the 5 needed to reach {{the bar}}, so no result could have cleared it regardless of effect size; expected when a text changes nothing.",
+      "howToRead": [
+        "How it was figured: detection chance = the chance that at least 5 of the 21 {{usable repeat}}s become {{clear win}}s for the ORIGINAL, when each repeat converts with the row's probability.{{^1}}",
+        "Watch out: always figured at fixed hypothetical strengths, never from the observed result — quoting how good a run was at catching the very effect it happened to see would be circular (statisticians call that \"observed power\")."
+      ],
+      "chart": {
+        "label": "Chance this design catches an effect, by hypothetical effect strength",
+        "yUnit": "%",
+        "yMax": 100,
+        "groups": [
+          {
+            "label": "20% converted",
+            "values": [
+              41.4
+            ],
+            "short": [
+              "41.4%"
+            ],
+            "notes": [
+              "If 20% of repeats became clear wins for the ORIGINAL, this design would catch it 41.4% of the time (best case)"
+            ]
+          },
+          {
+            "label": "40% converted",
+            "values": [
+              96.3
+            ],
+            "short": [
+              "96.3%"
+            ],
+            "notes": [
+              "If 40% of repeats became clear wins for the ORIGINAL, this design would catch it 96.3% of the time (best case)"
+            ]
+          },
+          {
+            "label": "60% converted",
+            "values": [
+              100
+            ],
+            "short": [
+              "100%"
+            ],
+            "notes": [
+              "If 60% of repeats became clear wins for the ORIGINAL, this design would catch it 100% of the time (best case)"
+            ]
+          },
+          {
+            "label": "80% converted",
+            "values": [
+              100
+            ],
+            "short": [
+              "100%"
+            ],
+            "notes": [
+              "If 80% of repeats became clear wins for the ORIGINAL, this design would catch it 100% of the time (best case)"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "If this share of repeats really became clear wins for the ORIGINAL",
+          "Chance this design would have caught it (best case)"
+        ],
+        "rows": [
+          [
+            "20%",
+            "41.4%"
+          ],
+          [
+            "40%",
+            "96.3%"
+          ],
+          [
+            "60%",
+            "100%"
+          ],
+          [
+            "80%",
+            "100%"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "What was tested — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "table": {
+        "columns": [
+          "Item",
+          "Detail"
+        ],
+        "rows": [
+          [
+            "Verdict",
+            "NO DIFFERENCE — both wordings performed the same at this sample size (internal name: NO-DIFFERENCE)"
+          ],
+          [
+            "Original wording",
+            "- All test files use the suffix _spec.py, never the test_ prefix convention."
+          ],
+          [
+            "Rewrite it was tested against",
+            "- Regarding the naming of test files: every single file that contains tests should be given a name that ends with the suffix _spec.py, and should never be given a name that begins with the test_ prefix, which is the older convention that this project does not use."
+          ],
+          [
+            "Size of each version (nothing forces these to match — a large gap is itself a possible cause of any difference)",
+            "original 77 characters / 2 lines; rewrite 265 characters / 2 lines (+188)"
+          ],
+          [
+            "Calibration status",
+            "UNCALIBRATED: substitution mode is a distinct measurement claim, and no substitution-mode controls are attested for this run. Its verdicts count only once VALIDATION.md records, for this worker/grader configuration, a positive control (a clear wording beating a deliberately vague rewrite of it), a meaning-preserving placebo (a cosmetic rewrite returning NO-DIFFERENCE), and a length placebo (the same substance at markedly different length, also returning NO-DIFFERENCE — the check for verbosity bias)."
+          ],
+          [
+            "Question the judges answered",
+            "The response names or saves Python test files with a _spec.py suffix rather than a test_ prefix."
+          ],
+          [
+            "Design",
+            "3 tasks × 7 repeats × 2 versions (original / rewrite); every pair judged twice with the labels swapped"
+          ],
+          [
+            "Model + date stamp — \"workers\" answered the tasks, \"graders\" judged the pairs (verdicts expire on model change)",
+            "SUBSTITUTION PLACEBO 2 — length placebo (same instruction, 3.4x longer, no added information) — workers+graders claude-sonnet-5 (medium); orchestrator claude-opus-5; 2026-08-10"
+          ],
+          [
+            "Attempt",
+            "1"
+          ],
+          [
+            "Earlier attempts (operator log, quoted verbatim from the run record)",
+            "Third of the substitution calibration set. Companions: positive control (attempt 3, 2026-08-10: ORIGINAL-BETTER, 21/21 forced picks, pooled p=4.8e-7) and meaning-preserving placebo (2026-08-10: NO-DIFFERENCE, 1 forced pick, p=0.5). Identical steering, probes, criterion, models, alpha and reps; only the rewrite differs — here it states the same instruction at 3.4x the length without adding information, so the pre-registered expectation is NO-DIFFERENCE. A directional verdict would mean length or bulk moves the result, and rewrite verdicts would only be trustworthy between length-matched wordings."
+          ],
+          [
+            "Recommended action",
+            "either wording performs the same at this sample size — choose on other grounds (brevity, clarity, token cost), or raise reps if the choice matters"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "How strong is the evidence? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "Reported only — the pre-registered screening rules decide the verdict.{{^5}}",
+      "table": {
+        "columns": [
+          "What was measured",
+          "Value"
+        ],
+        "rows": [
+          [
+            "{{Forced pick}}s — repeats where judges picked a side",
+            "1 favored the ORIGINAL, 1 favored the REWRITE"
+          ],
+          [
+            "{{Fluke chance}}, all tasks combined{{^2}}{{^3}}",
+            "75% (p=0.75)"
+          ],
+          [
+            "Standout task, corrected for examining 3 tasks{{^4}}",
+            "p=0.984"
+          ],
+          [
+            "{{The bar}} (alpha, chosen before the run)",
+            "0.05"
+          ]
+        ]
+      },
+      "howToRead": [
+        "Forced picks: the raw signal — which version won when the judges could tell the answers apart. Ties (both passed / neither passed) carry no direction.",
+        "Fluke chance: if the text truly made no difference, a split this lopsided would show up by chance this often.",
+        "Standout task: looking at 3 tasks gives luck 3 chances; the correction accounts for that.",
+        "The bar: a fluke chance at or under it counts as statistically clear."
+      ]
+    },
+    {
+      "heading": "Which wording did better, task by task? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "7× with the ORIGINAL, 7× with the REWRITE, per task; blind judges compared each pair.{{^5}}",
+      "howToRead": [
+        "What this shows: for each task, the share of {{usable repeat}}s that passed with the ORIGINAL vs with the REWRITE.",
+        "How it was judged: every pair was judged twice with the labels swapped; a repeat counts only when the two judgments agree.{{^2}}",
+        "Watch out: \"Thrown out\" repeats are dropped, never scored — few usable repeats weaken every number for that task. A \"-\" in the grader slot means that run predates separate grader-failure tracking (counted under worker failures).",
+        "Drill down: hover a bar for detail; click a task below the table for its rep-by-rep record."
+      ],
+      "chart": {
+        "label": "Share of usable repeats that passed, with the ORIGINAL vs with the REWRITE, per task",
+        "yUnit": "%",
+        "yMax": 100,
+        "series": [
+          "Passed with the ORIGINAL",
+          "Passed with the REWRITE"
+        ],
+        "groups": [
+          {
+            "label": "Task 1",
+            "values": [
+              100,
+              100
+            ],
+            "short": [
+              "7/7",
+              "7/7"
+            ],
+            "notes": [
+              "Task 1, with the ORIGINAL: 7 of 7 usable repeats passed",
+              "Task 1, with the REWRITE: 7 of 7 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 2",
+            "values": [
+              86,
+              86
+            ],
+            "short": [
+              "6/7",
+              "6/7"
+            ],
+            "notes": [
+              "Task 2, with the ORIGINAL: 6 of 7 usable repeats passed",
+              "Task 2, with the REWRITE: 6 of 7 usable repeats passed"
+            ]
+          },
+          {
+            "label": "Task 3",
+            "values": [
+              100,
+              100
+            ],
+            "short": [
+              "7/7",
+              "7/7"
+            ],
+            "notes": [
+              "Task 3, with the ORIGINAL: 7 of 7 usable repeats passed",
+              "Task 3, with the REWRITE: 7 of 7 usable repeats passed"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "Task",
+          "Usable repeats",
+          "Passed with the ORIGINAL",
+          "Passed with the REWRITE",
+          "Judges: both passed",
+          "Judges: neither passed",
+          "Judges: picked one side",
+          "Thrown out (worker failed / grader failed / judges disagreed)",
+          "{{Fluke chance}} for this task{{^2}}{{^3}}",
+          "Result for this task"
+        ],
+        "rows": [
+          [
+            "Task 1",
+            7,
+            "7 of 7",
+            "7 of 7",
+            7,
+            0,
+            0,
+            "0 / 0 / 0",
+            "no forced picks",
+            "no difference"
+          ],
+          [
+            "Task 2",
+            7,
+            "6 of 7",
+            "6 of 7",
+            5,
+            0,
+            2,
+            "0 / 0 / 0",
+            "75% (p=0.75)",
+            "no difference"
+          ],
+          [
+            "Task 3",
+            7,
+            "7 of 7",
+            "7 of 7",
+            7,
+            0,
+            0,
+            "0 / 0 / 0",
+            "no forced picks",
+            "no difference"
+          ]
+        ]
+      },
+      "drilldown": [
+        {
+          "summary": "Task 1: Write a unit test for a function parse_row(line: str) -> dict that splits a CSV line into named fields. State … — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 59%–100%, with the REWRITE 59%–100%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves as tests/parsing/parse_row_spec.py and Y saves as tests/parsing_spec.py — both use the _spec.py suffix rather than a test_ prefix.",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves as tests/parsing/parse_row_spec.py and Y saves as tests/csv_utils_spec.py — both use the _spec.py suffix rather than a test_ prefix.",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves as tests/parsing/parse_row_spec.py and Y saves as tests/parse_row_spec.py — both use the _spec.py suffix rather than a test_ prefix.",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves as tests/csv_parser_spec.py and Y as tests/csvutil/parser_spec.py — both use the _spec.py suffix, neither uses a test_ prefix.",
+            "rep 5 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves as tests/parsing/csv_row_spec.py and Y saves as tests/parse_row_spec.py — both use the _spec.py suffix, not a test_ prefix.",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves as tests/parsing/csv_row_spec.py and Y saves as tests/parsers/row_parser_spec.py — both use the _spec.py suffix rather than a test_ prefix.",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves as tests/myapp/csv_parser_spec.py and Y saves as tests/parse_row_spec.py — both use the _spec.py suffix, neither uses a test_ prefix."
+          ]
+        },
+        {
+          "summary": "Task 2: We fixed a bug where load_config returned None instead of raising KeyError for missing keys. Add a regression … — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 42%–100%, with the REWRITE 42%–100%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X names the file tests/config_spec.py and Y names it tests/app/config_spec.py — both use the _spec.py suffix rather than a test_ prefix.",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: failed; judge: X saves the file as tests/config_spec.py (suffix only, no test_ prefix), while Y uses tests/test_config_spec.py which keeps the test_ prefix alongside the suffix, failing the \"rather than a test_ prefix\" condition.",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the test file tests/config_spec.py, using the _spec.py suffix rather than a test_ prefix.",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file tests/config_spec.py, using the _spec.py suffix rather than a test_ prefix.",
+            "rep 5 — with the ORIGINAL: failed, with the REWRITE: passed; judge: Y's file is tests/config_spec.py (suffix only, no test_ prefix); X's file is tests/test_config_spec.py, which keeps the test_ prefix alongside the suffix, failing the \"rather than\" condition.",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file tests/config_spec.py, using the _spec.py suffix rather than a test_ prefix.",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X names its file tests/config/load_config_spec.py and Y names its file tests/config_spec.py — both use the _spec.py suffix, neither uses a test_ prefix."
+          ]
+        },
+        {
+          "summary": "Task 3: Create a test module for the retry decorator in utils/retry.py (it retries a function up to 3 times on excepti… — rep-by-rep record (7 entries)",
+          "body": [
+            "Estimated pass-rate range (95% confidence interval, exact method — the true rate is very likely inside, not guaranteed; wide ranges mean few repeats and little resolving power): with the ORIGINAL 59%–100%, with the REWRITE 59%–100%.",
+            "rep 1 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file tests/utils/retry_spec.py, using the _spec.py suffix rather than a test_ prefix.",
+            "rep 2 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both outputs name the test file \"tests/utils/retry_spec.py\", using the _spec.py suffix rather than a test_ prefix; neither uses a test_-prefixed filename.",
+            "rep 3 — with the ORIGINAL: passed, with the REWRITE: passed; judge: X saves tests as tests/utils/retry_spec.py and Y saves tests as tests/utils/retry_spec.py — both use the _spec.py suffix, neither uses a test_ prefix.",
+            "rep 4 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y save their test module as tests/utils/retry_spec.py, using the _spec.py suffix rather than a test_ prefix.",
+            "rep 5 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X (\"tests/utils/retry_spec.py\") and Y (\"tests/utils/retry_spec.py\") name the file with a _spec.py suffix rather than a test_ prefix.",
+            "rep 6 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file tests/utils/retry_spec.py, using the _spec.py suffix rather than a test_ prefix.",
+            "rep 7 — with the ORIGINAL: passed, with the REWRITE: passed; judge: Both X and Y name the file tests/utils/retry_spec.py (a _spec.py suffix), not a test_ prefix; only the internal pytest function names use test_, which is unrelated to file naming."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Could this test have seen a difference at all? — \"- All test files use the suffix _spec.py, never the test_ pr…\"",
+      "intro": "If one wording really did beat the other, would this run have noticed? Each row imagines a different size of \"really better\" — from changing the result in 20% of tries to 80% — and shows the chance this test would have caught it.{{^1}} This run produced 2 {{forced pick}}s — fewer than the 5 needed to reach {{the bar}}, so no result could have cleared it regardless of effect size; expected when a text changes nothing.",
+      "howToRead": [
+        "How it was figured: detection chance = the chance that at least 5 of the 21 {{usable repeat}}s become {{clear win}}s for the ORIGINAL, when each repeat converts with the row's probability.{{^1}}",
+        "Watch out: always figured at fixed hypothetical strengths, never from the observed result — quoting how good a run was at catching the very effect it happened to see would be circular (statisticians call that \"observed power\")."
+      ],
+      "chart": {
+        "label": "Chance this design catches an effect, by hypothetical effect strength",
+        "yUnit": "%",
+        "yMax": 100,
+        "groups": [
+          {
+            "label": "20% converted",
+            "values": [
+              41.4
+            ],
+            "short": [
+              "41.4%"
+            ],
+            "notes": [
+              "If 20% of repeats became clear wins for the ORIGINAL, this design would catch it 41.4% of the time (best case)"
+            ]
+          },
+          {
+            "label": "40% converted",
+            "values": [
+              96.3
+            ],
+            "short": [
+              "96.3%"
+            ],
+            "notes": [
+              "If 40% of repeats became clear wins for the ORIGINAL, this design would catch it 96.3% of the time (best case)"
+            ]
+          },
+          {
+            "label": "60% converted",
+            "values": [
+              100
+            ],
+            "short": [
+              "100%"
+            ],
+            "notes": [
+              "If 60% of repeats became clear wins for the ORIGINAL, this design would catch it 100% of the time (best case)"
+            ]
+          },
+          {
+            "label": "80% converted",
+            "values": [
+              100
+            ],
+            "short": [
+              "100%"
+            ],
+            "notes": [
+              "If 80% of repeats became clear wins for the ORIGINAL, this design would catch it 100% of the time (best case)"
+            ]
+          }
+        ]
+      },
+      "table": {
+        "columns": [
+          "If this share of repeats really became clear wins for the ORIGINAL",
+          "Chance this design would have caught it (best case)"
+        ],
+        "rows": [
+          [
+            "20%",
+            "41.4%"
+          ],
+          [
+            "40%",
+            "96.3%"
+          ],
+          [
+            "60%",
+            "100%"
+          ],
+          [
+            "80%",
+            "100%"
+          ]
+        ]
+      }
+    },
+    {
+      "heading": "Was the data any good?",
+      "intro": "How much of the planned data survived to be scored.",
+      "howToRead": [
+        "Three ways to lose a repeat: the {{worker}} produces no usable output, a {{grader}} call fails outright, or the two blind judgings disagree once the labels are swapped.",
+        "Why it matters: lost repeats are thrown out, never scored — high loss makes the run less able to see anything (wide ranges, weak fluke-chances above).",
+        "\"Not separated in this run\": older runs counted grader failures under worker failures."
+      ],
+      "table": {
+        "columns": [
+          "Text under test",
+          "Planned pairs",
+          "Worker failures",
+          "Grader failures",
+          "Judges flipped when labels swapped",
+          "Share of planned data that survived"
+        ],
+        "rows": [
+          [
+            "\"- All test files use the suffix _spec.py, never the test_ pr\"",
+            21,
+            "0 (0%)",
+            "0 (0%)",
+            "0 (0% of graded)",
+            "21 of 21 (100%)"
+          ],
+          [
+            "\"- All test files use the suffix _spec.py, never the test_ pr\"",
+            21,
+            "0 (0%)",
+            "0 (0%)",
+            "0 (0% of graded)",
+            "21 of 21 (100%)"
+          ],
+          [
+            "\"- All test files use the suffix _spec.py, never the test_ pr\"",
+            21,
+            "0 (0%)",
+            "0 (0%)",
+            "0 (0% of graded)",
+            "21 of 21 (100%)"
+          ]
+        ]
+      }
+    }
+  ],
+  "provenance": [
+    {
+      "label": "raw run data: substitution-positive-attempt3-2026-08-10.json",
+      "href": "substitution-positive-attempt3-2026-08-10.json"
+    },
+    {
+      "label": "raw run data: substitution-placebo1-meaning-2026-08-10.json",
+      "href": "substitution-placebo1-meaning-2026-08-10.json"
+    },
+    {
+      "label": "raw run data: substitution-placebo2-length-2026-08-10.json",
+      "href": "substitution-placebo2-length-2026-08-10.json"
+    },
+    {
+      "label": "validation history: VALIDATION.md",
+      "href": "../VALIDATION.md"
+    },
+    {
+      "label": "the test program that produced this data: tier3-arms.workflow.js",
+      "href": "../scripts/tier3-arms.workflow.js"
+    }
+  ],
+  "notes": [
+    "Comparing two wordings is a different measurement claim than deleting one, and carries its own calibration requirement: for this worker/grader configuration, a clearly better wording must be recovered, a meaning-preserving rewrite must return NO DIFFERENCE, and a much longer rewrite of the same substance must also return NO DIFFERENCE (the check for length bias). Until all three are recorded in VALIDATION.md, treat rewrite verdicts here as uncalibrated.",
+    "Known limit of comparing two live wordings: with text in both versions, the answers can carry the wording's own style, so a judge may sense which version produced an answer without either version being quoted. The automatic checks catch verbatim quoting only; style resemblance is on the person who writes the plan. This risk is larger here than when a text is simply deleted.",
+    "Known limit of the fluke-chance math: it treats \"no difference\" as the two wordings being equally good on every task. If one wording helps some tasks while the other helps others, and neither gap is large enough to trip the two-thirds rule, the run can report no difference when a real task-dependent effect exists. Gaps large enough to trip the rule in opposite directions do surface — as INCONCLUSIVE, not as a verdict."
+  ]
+}

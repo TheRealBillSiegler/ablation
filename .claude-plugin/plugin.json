@@ -1,0 +1,9 @@
+{
+  "name": "ablation",
+  "version": "0.1.0",
+  "description": "Tests whether a piece of instruction text still earns its place: runs the same tasks with and without it, has blind judges compare the paired outputs, and returns a verdict with the smallest difference the design could have detected. Also compares two wordings of the same line.",
+  "author": {
+    "name": "Bill Siegler",
+    "url": "https://github.com/TheRealBillSiegler"
+  }
+}
