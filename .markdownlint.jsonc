@@ -1,0 +1,8 @@
+{
+  // One logical line per paragraph or bullet — the repo's no-hard-wraps
+  // convention (CONTRIBUTING.md) — so the line-length rule is off by design.
+  "MD013": false,
+  // Duplicate headings are fine when they live under different parents —
+  // every plugin section in CHANGELOG.md has its own "### 0.1.0".
+  "MD024": { "siblings_only": true }
+}
