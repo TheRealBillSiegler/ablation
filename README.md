@@ -42,12 +42,8 @@ A verdict is scoped to the tasks it ran on, the model that produced it, and the 
 
 The judge is a language model from the same family as the workers, which bounds what blinding can buy. The skill's Bounds section states the limits it cannot mechanically catch.
 
-## Relation to the other plugins
-
-This is the measurement instrument the others' claims rest on. [`delegation-tiering`](https://github.com/TheRealBillSiegler/delegation-tiering) and [`steering-claude-code`](https://github.com/TheRealBillSiegler/steering-claude-code) each make standing claims that certain words improve behaviour; this is how such a claim gets checked rather than assumed. Neither requires it, and it requires neither.
-
 ## Source fidelity
 
-Claims carry the same provenance tiers as the sibling plugins, defined in [delegation-tiering's Anchoring policy](https://github.com/TheRealBillSiegler/delegation-tiering/blob/main/docs/REMEDIATION.md#anchoring-policy). The skill's Source section links the live pages behind the method; each claim is mapped to its verbatim supporting text, source and verification date in [docs/research/ablation-claims.md](https://github.com/TheRealBillSiegler/ablation/blob/main/docs/research/ablation-claims.md), with the dated captures beside it.
+Claims carry one of three provenance tiers — article digest, doc page, or dated live test. The skill's Source section links the live pages behind the method; each claim is mapped to its verbatim supporting text, source and verification date in [docs/research/ablation-claims.md](https://github.com/TheRealBillSiegler/ablation/blob/main/docs/research/ablation-claims.md), with the dated captures beside it.
 
 The claims map, the captures, the script's test, the report renderer, the validation record and the raw calibration outputs all live in the plugin repo — under [docs/research/](https://github.com/TheRealBillSiegler/ablation/tree/main/docs/research) and [evals/](https://github.com/TheRealBillSiegler/ablation/tree/main/evals) — not in the installed payload. The payload carries only what the model reads to do the work.
