@@ -13,14 +13,14 @@ One skill, no hooks — nothing always-on beyond its listing description. The ex
 **Via the central marketplace**, alongside Bill Siegler's other plugins:
 
 ```bash
-/plugin marketplace add TheRealBillSiegler/siegler-plugins
+/plugin marketplace add https://github.com/TheRealBillSiegler/siegler-plugins
 /plugin install ablation@siegler-plugins
 ```
 
 **Direct from this repo**, standalone:
 
 ```bash
-/plugin marketplace add TheRealBillSiegler/ablation
+/plugin marketplace add https://github.com/TheRealBillSiegler/ablation
 /plugin install ablation@ablation
 ```
 
