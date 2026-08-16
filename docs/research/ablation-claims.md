@@ -2,7 +2,7 @@
 
 Every external claim this skill relies on, with the exact text supporting it. One row per claim rather than per source, so a drift check tells you *which claim* broke rather than that a page moved.
 
-Raw captures sit beside this file and are the fallback when a claim turns out to be missing from the table. Captures are dated; the web is not — re-verify against the live URL before leaning on any row for a durable claim.
+Cited excerpts sit beside this file; where a capture is a complete third-party work, the full-fidelity version is retained in the private `ablation-archive` repo at the mirrored path, with its SHA-256 pinned in the excerpt file's header. Captures are dated; the web is not — re-verify against the live URL before leaning on any row for a durable claim.
 
 **Status:** `verified` — quote confirmed against the source on the date shown · `stale` — capture older than the source's last known change · `superseded` — source now says something different · `UNVERIFIED` — no primary source read.
 
@@ -25,7 +25,7 @@ Rows 4–6 have no local capture, so a silent upstream edit is undetectable for 
 
 ## Note on the transcript
 
-Rows 1–2 quote auto-generated captions, which garble product names ("cloudmd" for CLAUDE.md). The garbling is in the source and is preserved rather than silently corrected; `[sic]` marks it. Both passages were confirmed present in the bundled file.
+Rows 1–2 quote auto-generated captions, which garble product names ("cloudmd" for CLAUDE.md). The garbling is in the source and is preserved rather than silently corrected; `[sic]` marks it. Both passages were confirmed present in the bundled file, which carries the cited passage with surrounding context; the complete transcript is retained privately (`ablation-archive`, same path, hash-pinned in the excerpt header) because republishing a full third-party transcript is redistribution, not quotation.
 
 The interview was recorded the day after the Opus 5 release; the transcript was located 2026-08-07. Independent journalism corroborates the same remarks, fetched 2026-08-06: <https://finance.biggo.com/news/954a98de-8b79-429f-bd7e-761c27a3b210> and <https://www.dutchstartup.ai/en/tv/boris-cherny-just-told-us-to-delete-our-claude-md-files>. These are secondary and carry no weight beyond confirming the primary was not misheard.
 
