@@ -1,0 +1,73 @@
+Excerpt digest: Boris Cherny interview — "We Cut 80% of Claude Code's Prompt"
+Source: https://www.youtube.com/watch?v=qyPCVqFUyDo — Y Combinator channel. Auto-generated captions; garbling preserved (see the claims map's transcript note).
+Captured: 2026-08-07. This file carries only the passage cited by ablation-claims.md rows 1-2, with surrounding context. The complete transcript is retained privately in the ablation-archive repo at this same path; its SHA-256 is 6f68e6ede7cbfb7d211f743ad8954adfd9dee39040320e10281ed9b16dd0a5a6 (hash of the git blob: git show HEAD:<path> | sha256sum). Verify these excerpts against the video itself.
+
+--- excerpt [00:05:00]-[00:07:19] ---
+[00:05:00] and we actually use this as a sort of
+[00:05:01] ablation to figure out is the prompt
+[00:05:05] useful and what's interesting is that
+[00:05:06] the model is actually a little bit more
+[00:05:08] intelligent without these prompts.
+[00:05:10] That's something that we've been
+[00:05:11] finding. But when you use quad code as a
+[00:05:13] product, you do actually want some of
+[00:05:15] these prompts because it helps you use
+[00:05:18] the product and it it helps the the
+[00:05:19] product behave and the model behave in
+[00:05:21] the way that you would want when when
+[00:05:23] you're using it as a person.
+[00:05:24] >> I think the thing that's really
+[00:05:26] fascinating in this era of building
+[00:05:28] basically you have built the best
+[00:05:30] hardness in the world for for claude and
+[00:05:33] that's cloud code. From what I'm
+[00:05:35] hearing, you for every model release,
+[00:05:37] you basically delete all of the
+[00:05:39] codebase, delete all of the prompt and
+[00:05:41] start from scratch every time. That in
+[00:05:44] the old world would have been not
+[00:05:46] something Startup would have done for
+[00:05:48] the product. It's like press delete
+[00:05:50] every six months for everything.
+[00:05:52] >> That's right. That's right. We So to be
+[00:05:53] fair, we don't delete the entire
+[00:05:55] codebase, but we do delete a lot. So
+[00:05:57] every time there's a new model, we try
+[00:05:59] we call in research, you call this
+[00:06:01] ablation. And so what this means is you
+[00:06:03] delete the entire system prompt and then
+[00:06:05] you bring it back line by line to figure
+[00:06:07] out what is the impact of each
+[00:06:08] individual line. Um it's sort of like a
+[00:06:10] eval and you can kind of like evaluate
+[00:06:12] it and ablation essentially it's a eval
+[00:06:15] but you delete things to figure out the
+[00:06:16] impact and yeah like we do the same
+[00:06:19] thing for tools like we unchip tools all
+[00:06:21] the time. We you know delete code in the
+[00:06:22] harness all the time. If you look at
+[00:06:24] actually the code that's in the cloud
+[00:06:26] code harness today, almost all of it is
+[00:06:28] about safety and permissions and static
+[00:06:31] analysis and there's a bunch of UI code
+[00:06:33] and we've actually unchipped a lot of
+[00:06:36] the other code already.
+[00:06:37] >> Do you think this way of building a
+[00:06:39] aentic product and harness and basically
+[00:06:44] doing ablations every time with a
+[00:06:46] there's a new model released? Should
+[00:06:48] everyone in this room that's building AI
+[00:06:50] products basically do that? be
+[00:06:52] comfortable and brave to press delete.
+[00:06:55] >> 100%. Yeah. And and for people that
+[00:06:57] aren't building agentic products, but
+[00:06:59] you're using cloud code, every six
+[00:07:00] months, delete your cloudmd, delete your
+[00:07:03] skills, delete your hooks, see what the
+[00:07:06] model does, and it might surprise you.
+[00:07:08] And actually for Opus 5, this is
+[00:07:10] something we really do recommend is just
+[00:07:13] try deleting all of these things because
+[00:07:15] the model might really just not need all
+[00:07:18] those instructions that you needed for
+[00:07:19] past models. Let's talk a bit about how
